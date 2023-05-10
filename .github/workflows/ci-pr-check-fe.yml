@@ -5,7 +5,7 @@ name: 'Pull request validation in APL.Utility.Website'
 
 on:
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main","dev" ]
     paths:
       - 'Prostech.WMS.Website/**'
 
