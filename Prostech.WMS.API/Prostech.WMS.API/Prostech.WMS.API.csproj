@@ -15,4 +15,9 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Prostech.WMS.BLL\Prostech.WMS.BLL.csproj" />
+    <ProjectReference Include="..\Prostech.WMS.DAL\Prostech.WMS.DAL.csproj" />
+  </ItemGroup>
+
 </Project>

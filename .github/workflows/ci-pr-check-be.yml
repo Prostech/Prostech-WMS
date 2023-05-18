@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
      run:
-      working-directory: Prostech.WMS.API
+      working-directory: Prostech.WMS.API/Prostech.WMS.API
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET
