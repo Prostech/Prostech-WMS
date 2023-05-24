@@ -1,5 +1,15 @@
-var builder = WebApplication.CreateBuilder(args);
+var configuration = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+    .Build();
 
+string envInUsed = configuration.GetSection("AppSettings:ASPNETCORE_ENVIRONMENT").Value;
+
+
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args,
+    EnvironmentName = envInUsed
+});
 // Add services to the container.
 
 builder.Services.AddControllers();
