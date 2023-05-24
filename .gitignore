@@ -396,3 +396,8 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+#docker
+.data
+/data
+/Prostech.WMS.API/Prostech.WMS.DAL/Migrations
