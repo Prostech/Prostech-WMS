@@ -1,14 +1,4 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  serverRuntimeConfig: {
-    // server runtime configurations
-  },
-  publicRuntimeConfig: {
-    // public runtime configurations
-  },
-  server: {
-    port: 3001, // Change this to the desired port number
-  },
-};
+const nextConfig = {}
 
-module.exports = nextConfig;
+module.exports = nextConfig
