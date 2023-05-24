@@ -400,3 +400,4 @@ FodyWeavers.xsd
 #docker
 .data
 /data
+/Prostech.WMS.API/Prostech.WMS.DAL/Migrations
