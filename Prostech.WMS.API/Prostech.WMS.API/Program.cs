@@ -1,3 +1,5 @@
+using Prostech.WMS.API.Models;
+
 var configuration = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
     .Build();
@@ -10,6 +12,10 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
     Args = args,
     EnvironmentName = envInUsed
 });
+
+//Config to use Appsetting objects in appsettings json
+var appConfigSection = builder.Configuration.GetSection("AppSettings");
+builder.Services.Configure<AppSettings>(appConfigSection);
 // Add services to the container.
 
 builder.Services.AddControllers();
