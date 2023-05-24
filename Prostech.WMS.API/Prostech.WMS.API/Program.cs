@@ -1,4 +1,8 @@
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.EntityFrameworkCore;
 using Prostech.WMS.API.Models;
+using Prostech.WMS.DAL.DBContext;
+using Prostech.WMS.DAL.DBContext.Interface;
 
 var configuration = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
@@ -36,6 +40,12 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+//Get db connection string from appsetting
+string wmsDbConnStr = builder.Configuration.GetSection("AppSettings:DatabaseConnection:WMS").Value;
+
+builder.Services.AddScoped<IWMSContext>(x =>
+new WMSContext(new DbContextOptionsBuilder<WMSContext>().UseNpgsql(wmsDbConnStr).Options));
 
 var app = builder.Build();
 
