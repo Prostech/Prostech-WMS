@@ -45,18 +45,6 @@ namespace Prostech.WMS.DAL.DBContext
                 configuration.ApplyConfiguration(modelBuilder);
             }
 
-            //UserRole table
-            modelBuilder.Entity<Product>(entity =>
-            {
-                entity.HasKey(p => p.ProductId);
-                entity.Property(p => p.ProductName);
-            });
-
-            // Seed data
-            modelBuilder.Entity<Product>().HasData(
-                new Product { ProductId = 1, ProductName = "Survey 1" }
-            );
-
             base.OnModelCreating(modelBuilder);
         }
 
