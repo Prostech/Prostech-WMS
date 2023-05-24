@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [ "master", "dev" ]
     paths:
-      - 'Prostech.WMS.API/**'
+      - "Prostech.WMS.API/**"
 jobs:
   build:
     runs-on: ubuntu-latest
