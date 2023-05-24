@@ -16,6 +16,20 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 //Config to use Appsetting objects in appsettings json
 var appConfigSection = builder.Configuration.GetSection("AppSettings");
 builder.Services.Configure<AppSettings>(appConfigSection);
+
+//Get urls for allow CORS
+string[] apiAllowOrigin = builder.Configuration.GetSection("AppSettings:AllowOrigin").Value.Split(',');
+
+
+//services cors
+builder.Services.AddCors(p => p.AddPolicy("CorsPolicy", builder =>
+{
+    builder.AllowAnyMethod()
+           .AllowAnyHeader()
+           .AllowCredentials()
+    .WithOrigins(apiAllowOrigin);
+}));
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -33,6 +47,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("CorsPolicy");
 
 app.UseAuthorization();
 
