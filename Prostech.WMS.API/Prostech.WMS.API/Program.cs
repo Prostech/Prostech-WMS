@@ -1,8 +1,14 @@
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 using Prostech.WMS.API.Models;
+using Prostech.WMS.BLL;
+using Prostech.WMS.BLL.Interface;
 using Prostech.WMS.DAL.DBContext;
 using Prostech.WMS.DAL.DBContext.Interface;
+using Prostech.WMS.DAL.Models;
+using Prostech.WMS.DAL.Repositories.WMS;
+using Prostech.WMS.DAL.Repositories.WMS.Base;
+using Prostech.WMS.DAL.Repositories.WMS.Interface;
 
 var configuration = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
@@ -41,11 +47,27 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddControllers().AddNewtonsoftJson(options =>
+{
+    options.UseMemberCasing();
+    //options.SerializerSettings.Converters.Add(new TrimmingConverter());
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+});
+
 //Get db connection string from appsetting
 string wmsDbConnStr = builder.Configuration.GetSection("AppSettings:DatabaseConnection:WMS").Value;
 
+//DBContext
 builder.Services.AddScoped<IWMSContext>(x =>
 new WMSContext(new DbContextOptionsBuilder<WMSContext>().UseNpgsql(wmsDbConnStr).Options));
+
+//Service
+builder.Services.AddScoped<IProductItemService, ProductItemService>();
+
+//Repository
+builder.Services.AddScoped(typeof(IWMSGenericRepository<>), typeof(WMSGenericRepository<>));
+
+builder.Services.AddScoped<IProductItemRepository, ProductItemRepository>();
 
 var app = builder.Build();
 
