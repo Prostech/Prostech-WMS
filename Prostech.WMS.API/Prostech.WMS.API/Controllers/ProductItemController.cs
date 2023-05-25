@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Prostech.WMS.BLL.Interface;
+using Prostech.WMS.DAL.DTOs.ProductItemDTO;
 using Prostech.WMS.DAL.Models;
 
 namespace Prostech.WMS.API.Controllers
@@ -18,7 +19,7 @@ namespace Prostech.WMS.API.Controllers
         [HttpGet("product-item")]
         public async Task<IActionResult> GetProductItemsAsync()
         {
-            List<ProductItem> productItem = new List<ProductItem>();
+            List<ProductItemCriteriaDTO> productItem = new List<ProductItemCriteriaDTO>();
             try
             {
                 productItem = await _productItemService.GetProductItemsListAsync();

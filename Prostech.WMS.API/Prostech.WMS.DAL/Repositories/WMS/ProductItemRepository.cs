@@ -26,29 +26,9 @@ namespace Prostech.WMS.DAL.Repositories.WMS
                 .ThenInclude(p => p.Brand)
                 .Include(pi => pi.Product)
                 .ThenInclude(p => p.Category)
+                .Include(pi => pi.ProductItemStatus)
                 .OrderBy(pi => pi.SKU)
-                .Select(pi => new ProductItem
-                {
-                    SKU = pi.SKU,
-                    ProductId = pi.ProductId,
-                    Price = pi.Price,
-                    Product = new Product
-                    {
-                        ProductName = pi.Product.ProductName,
-                        Description = pi.Product.Description,
-                        BrandId = pi.Product.BrandId,
-                        Brand = new Brand
-                        {
-                            BrandId = pi.Product.BrandId,
-                            BrandName = pi.Product.Brand.BrandName,
-                        },
-                        Category = new Category
-                        {
-                            CategoryId = pi.Product.CategoryId,
-                            CategoryName = pi.Product.Category.CategoryName
-                        }
-                    }
-                }).ToListAsync();
+                .ToListAsync();
         }
     }
 }

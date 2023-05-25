@@ -24,18 +24,29 @@ namespace Prostech.WMS.DAL.Mapping.WMS
 
             entity.HasKey(b => b.BrandId);
 
-            entity.Property(b => b.BrandName);
+            entity.Property(b => b.BrandName).IsRequired();
+
+            entity.Property(b => b.IsActive).IsRequired();
+
+            entity.Property(b => b.CreatedBy);
+
+            entity.Property(b => b.CreatedTime);
+
+            entity.Property(b => b.ModifiedBy);
+
+            entity.Property(b => b.ModifiedTime);
+
 
             entity.HasMany(b => b.Products)
                   .WithOne(p => p.Brand)
                   .HasForeignKey(b => b.BrandId);
 
             entity.HasData(
-                 new Brand { BrandId = 1, BrandName = "Apple"},
-                 new Brand { BrandId = 2, BrandName = "Samsung" },
-                 new Brand { BrandId = 3, BrandName = "Asus" },
-                 new Brand { BrandId = 4, BrandName = "Xiaomi" },
-                 new Brand { BrandId = 5, BrandName = "Sony" }
+                 new Brand { BrandId = 1, BrandName = "Apple", IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow}, 
+                 new Brand { BrandId = 2, BrandName = "Samsung", IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new Brand { BrandId = 3, BrandName = "Asus", IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new Brand { BrandId = 4, BrandName = "Xiaomi", IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new Brand { BrandId = 5, BrandName = "Sony", IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow }
             );
 
             base.Configure(entity);
