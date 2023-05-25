@@ -25,7 +25,18 @@ namespace Prostech.WMS.DAL.Mapping.WMS
             entity.HasKey(p => p.ProductId);
 
             entity.Property(p => p.ProductName);
+
             entity.Property(p => p.Description);
+
+            entity.Property(c => c.IsActive).IsRequired();
+
+            entity.Property(c => c.CreatedBy);
+
+            entity.Property(c => c.CreatedTime);
+
+            entity.Property(c => c.ModifiedBy);
+
+            entity.Property(c => c.ModifiedTime);
 
             entity.HasOne(p => p.Brand)
                   .WithMany(b => b.Products)
@@ -42,11 +53,11 @@ namespace Prostech.WMS.DAL.Mapping.WMS
                   .HasForeignKey(p => p.ProductId);
 
             entity.HasData(
-                 new Product { ProductId = 1, ProductName = "Iphone 14" , Description = "Mô tả", BrandId = 1, CategoryId = 1},
-                 new Product { ProductId = 2, ProductName = "Samsung Galaxy S23", Description = "Mô tả", BrandId = 2, CategoryId = 1 },
-                 new Product { ProductId = 3, ProductName = "Asus ROG", Description = "Mô tả", BrandId = 3, CategoryId = 2 },
-                 new Product { ProductId = 4, ProductName = "Airpod", Description = "Mô tả", BrandId = 1, CategoryId = 3 },
-                 new Product { ProductId = 5, ProductName = "Xiaomi Plus 9", Description = "Mô tả", BrandId = 4, CategoryId = 1 }
+                 new Product { ProductId = 1, ProductName = "Iphone 14" , Description = "Mô tả", BrandId = 1, CategoryId = 1, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new Product { ProductId = 2, ProductName = "Samsung Galaxy S23", Description = "Mô tả", BrandId = 2, CategoryId = 1, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new Product { ProductId = 3, ProductName = "Asus ROG", Description = "Mô tả", BrandId = 3, CategoryId = 2, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new Product { ProductId = 4, ProductName = "Airpod", Description = "Mô tả", BrandId = 1, CategoryId = 3, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new Product {ProductId = 5, ProductName = "Xiaomi Plus 9", Description = "Mô tả", BrandId = 4, CategoryId = 1, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow }
             );
 
             base.Configure(entity);

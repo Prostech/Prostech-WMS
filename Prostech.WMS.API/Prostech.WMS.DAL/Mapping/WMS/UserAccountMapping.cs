@@ -26,16 +26,24 @@ namespace Prostech.WMS.DAL.Mapping.WMS
 
             entity.Property(ua => ua.Password);
 
-            entity.Property(ua => ua.IsActive);
+            entity.Property(ua => ua.IsActive).IsRequired();
+
+            entity.Property(c => c.CreatedBy);
+
+            entity.Property(c => c.CreatedTime);
+
+            entity.Property(c => c.ModifiedBy);
+
+            entity.Property(c => c.ModifiedTime);
 
             entity.HasOne(ua => ua.User)
                   .WithMany(u => u.UserAccounts)
                   .HasForeignKey(ua => ua.UserId);
 
             entity.HasData(
-                 new UserAccount { UserName = "phat.vo", Password = "123456", IsActive = true, UserId = 1 },
-                 new UserAccount { UserName = "hai.tran", Password = "123456", IsActive = true, UserId = 2 },
-                 new UserAccount { UserName = "admin", Password = "Rozitek123@#", IsActive = true, UserId = 1 }
+                 new UserAccount { UserName = "phat.vo", Password = "123456", IsActive = true, UserId = 1, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new UserAccount { UserName = "hai.tran", Password = "123456", IsActive = true, UserId = 2, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new UserAccount { UserName = "admin", Password = "Rozitek123@#", IsActive = true, UserId = 1, CreatedBy = 1, CreatedTime = DateTime.UtcNow }
             );
 
             base.Configure(entity);

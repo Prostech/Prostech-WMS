@@ -7,20 +7,19 @@ using System.Threading.Tasks;
 
 namespace Prostech.WMS.DAL.Models
 {
-    public class Brand : BaseEntity
+    public class ProductItemStatus : BaseEntity
     {
-        public Brand()
+        public ProductItemStatus()
         {
-            Products = new HashSet<Product>();
+            ProductItems = new HashSet<ProductItem>();
         }
-        public int BrandId { get; set; }
-        public string BrandName { get; set; }
+        public int ProductItemStatusId { get; set; }
+        public string ProductItemStatusName { get; set; }
         public bool IsActive { get; set; }
         public DateTime? CreatedTime { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? ModifiedTime { get; set; }
         public int? ModifiedBy { get; set; }
-        public virtual ICollection<Product> Products { get; set; }
-
+        public virtual ICollection<ProductItem> ProductItems { get; set; }
     }
 }
