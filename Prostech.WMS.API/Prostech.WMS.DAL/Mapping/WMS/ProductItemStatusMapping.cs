@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Prostech.WMS.DAL.Mapping.WMS
 {
-    public class CategoryMapping : EntityTypeConfiguration<Category>
+    public class ProductItemStatusMapping : EntityTypeConfiguration<ProductItemStatus>
     {
         #region Methods
 
@@ -18,13 +18,13 @@ namespace Prostech.WMS.DAL.Mapping.WMS
         /// Configures the entity
         /// </summary>
         /// <param name="builder">The builder to be used to configure the entity</param>
-        public override void Configure(EntityTypeBuilder<Category> entity)
+        public override void Configure(EntityTypeBuilder<ProductItemStatus> entity)
         {
-            entity.ToTable(nameof(Category), "public");
+            entity.ToTable(nameof(ProductItemStatus), "public");
 
-            entity.HasKey(c => c.CategoryId);
+            entity.HasKey(pis => pis.ProductItemStatusId);
 
-            entity.Property(c => c.CategoryName);
+            entity.Property(pis => pis.ProductItemStatusName);
 
             entity.Property(c => c.IsActive).IsRequired();
 
@@ -36,14 +36,13 @@ namespace Prostech.WMS.DAL.Mapping.WMS
 
             entity.Property(c => c.ModifiedTime);
 
-            entity.HasMany(c => c.Products)
-                  .WithOne(p => p.Category)
-                  .HasForeignKey(c => c.CategoryId);
+            entity.HasMany(pis => pis.ProductItems)
+                  .WithOne(pi => pi.ProductItemStatus)
+                  .HasForeignKey(pi => pi.ProductItemStatusId);
 
             entity.HasData(
-                 new Category { CategoryId = 1, CategoryName = "Laptop", IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
-                 new Category { CategoryId = 2, CategoryName = "Smart phone", IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
-                 new Category { CategoryId = 3, CategoryName = "Earbuds", IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow }
+                 new ProductItemStatus { ProductItemStatusId = 1, ProductItemStatusName = "New", IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new ProductItemStatus { ProductItemStatusId = 2, ProductItemStatusName = "Second-hand", IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow }
             );
 
             base.Configure(entity);

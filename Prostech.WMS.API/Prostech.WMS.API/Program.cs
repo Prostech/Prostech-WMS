@@ -69,6 +69,8 @@ builder.Services.AddScoped(typeof(IWMSGenericRepository<>), typeof(WMSGenericRep
 
 builder.Services.AddScoped<IProductItemRepository, ProductItemRepository>();
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

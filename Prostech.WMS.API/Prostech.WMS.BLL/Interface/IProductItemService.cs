@@ -1,4 +1,5 @@
-﻿using Prostech.WMS.DAL.Models;
+﻿using Prostech.WMS.DAL.DTOs.ProductItemDTO;
+using Prostech.WMS.DAL.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace Prostech.WMS.BLL.Interface
 {
     public interface IProductItemService
     {
-        Task<List<ProductItem>> GetProductItemsListAsync();
+        Task<List<ProductItemCriteriaDTO>> GetProductItemsListAsync();
     }
 }
