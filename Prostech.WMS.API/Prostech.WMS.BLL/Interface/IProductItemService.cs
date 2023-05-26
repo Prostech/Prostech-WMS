@@ -10,6 +10,6 @@ namespace Prostech.WMS.BLL.Interface
 {
     public interface IProductItemService
     {
-        Task<List<ProductItemCriteriaDTO>> GetProductItemsListAsync();
+        Task<List<ProductItemResponse>> GetProductItemsListAsync(ProductItemRequest request);
     }
 }

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
+using Prostech.WMS.API.Middlewares;
 using Prostech.WMS.API.Models;
 using Prostech.WMS.BLL;
 using Prostech.WMS.BLL.Interface;
@@ -85,6 +86,8 @@ app.UseHttpsRedirection();
 app.UseCors("CorsPolicy");
 
 app.UseAuthorization();
+
+app.UseMiddleware<ResponseWrappingMiddleware>();
 
 app.MapControllers();
 

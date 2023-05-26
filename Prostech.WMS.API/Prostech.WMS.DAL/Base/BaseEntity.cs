@@ -11,5 +11,11 @@ namespace Prostech.WMS.DAL.Base
     /// </summary>
     public abstract partial class BaseEntity
     {
+        public bool IsActive { get; set; }
+        public DateTime? CreatedTime { get; set; }
+        public int? CreatedBy { get; set; }
+        public DateTime? ModifiedTime { get; set; }
+        public int? ModifiedBy { get; set; }
+        public Guid GUID { get; set; }
     }
 }

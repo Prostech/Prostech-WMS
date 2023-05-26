@@ -2,6 +2,7 @@
 using Prostech.WMS.BLL.Interface;
 using Prostech.WMS.DAL.DTOs.ProductItemDTO;
 using Prostech.WMS.DAL.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace Prostech.WMS.API.Controllers
 {
@@ -17,22 +18,19 @@ namespace Prostech.WMS.API.Controllers
         }
 
         [HttpGet("product-item")]
-        public async Task<IActionResult> GetProductItemsAsync()
+        public async Task<IActionResult> GetProductItemsAsync([FromQuery] ProductItemRequest request)
         {
-            List<ProductItemCriteriaDTO> productItem = new List<ProductItemCriteriaDTO>();
+            List<ProductItemResponse> productItem = new List<ProductItemResponse>();
             try
             {
-                productItem = await _productItemService.GetProductItemsListAsync();
+                productItem = await _productItemService.GetProductItemsListAsync(request);
+
                 return new JsonResult(productItem);
             }
             catch (Exception ex)
             {
-                return new BadRequestObjectResult(
-                    new
-                    {
-                        Id = -1,
-                        Message = ex.Message,
-                    });
+                HttpContext.Response.StatusCode = 400;
+                return new JsonResult(ex.Message);
             }
         }
     }

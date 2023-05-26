@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
 using Prostech.WMS.DAL.Base;
 using Prostech.WMS.DAL.Models;
 using System;
@@ -36,6 +37,7 @@ namespace Prostech.WMS.DAL.Mapping.WMS
 
             entity.Property(b => b.ModifiedTime);
 
+            entity.Property(_ => _.GUID).HasDefaultValueSql("gen_random_uuid()");
 
             entity.HasMany(b => b.Products)
                   .WithOne(p => p.Brand)

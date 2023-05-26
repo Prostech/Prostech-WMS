@@ -17,11 +17,6 @@ namespace Prostech.WMS.DAL.Models
         public string Fullname { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
-        public bool IsActive { get; set; }
-        public DateTime? CreatedTime { get; set; }
-        public int? CreatedBy { get; set; }
-        public DateTime ? ModifiedTime { get; set; }
-        public int? ModifiedBy { get; set; }
         public virtual ICollection<UserAccount> UserAccounts { get; set;}
     }
 }

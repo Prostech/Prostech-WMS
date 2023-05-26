@@ -20,11 +20,6 @@ namespace Prostech.WMS.DAL.Models
         public Brand Brand { get; set; }
         public int CategoryId { get; set; }
         public Category Category { get; set; }
-        public bool IsActive { get; set; }
-        public DateTime? CreatedTime { get; set; }
-        public int? CreatedBy { get; set; }
-        public DateTime? ModifiedTime { get; set; }
-        public int? ModifiedBy { get; set; }
         public virtual ICollection<ProductItem> ProductItems { get;}
     }
 }
