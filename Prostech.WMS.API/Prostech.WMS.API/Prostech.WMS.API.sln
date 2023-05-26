@@ -5,9 +5,9 @@ VisualStudioVersion = 17.5.33627.172
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Prostech.WMS.API", "Prostech.WMS.API.csproj", "{15EBAA6E-8755-466D-9AE2-4B82AC7E1A29}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prostech.WMS.BLL", "..\Prostech.WMS.BLL\Prostech.WMS.BLL.csproj", "{49AF872D-8510-4B45-8B82-3B59D7C11FCE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Prostech.WMS.BLL", "..\Prostech.WMS.BLL\Prostech.WMS.BLL.csproj", "{49AF872D-8510-4B45-8B82-3B59D7C11FCE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prostech.WMS.DAL", "..\Prostech.WMS.DAL\Prostech.WMS.DAL.csproj", "{2AC67026-EA9A-443C-9DF2-91563C2B6D8A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Prostech.WMS.DAL", "..\Prostech.WMS.DAL\Prostech.WMS.DAL.csproj", "{2AC67026-EA9A-443C-9DF2-91563C2B6D8A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

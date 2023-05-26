@@ -29,6 +29,8 @@ namespace Prostech.WMS.DAL.Mapping.WMS
 
             entity.Property(c => c.IsStock).IsRequired();
 
+            entity.Ignore(_ => _.IsActive);
+
             entity.Property(c => c.CreatedBy);
 
             entity.Property(c => c.CreatedTime);
