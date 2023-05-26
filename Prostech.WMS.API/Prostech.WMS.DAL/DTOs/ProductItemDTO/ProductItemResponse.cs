@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Prostech.WMS.DAL.DTOs.ProductItemDTO
 {
-    public class ProductItemCriteriaDTO
+    public class ProductItemResponse
     {
         public int SKU { get; set; }
         public int ProductId { get; set; }

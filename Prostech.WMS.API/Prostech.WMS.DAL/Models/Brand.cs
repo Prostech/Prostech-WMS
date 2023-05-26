@@ -15,11 +15,6 @@ namespace Prostech.WMS.DAL.Models
         }
         public int BrandId { get; set; }
         public string BrandName { get; set; }
-        public bool IsActive { get; set; }
-        public DateTime? CreatedTime { get; set; }
-        public int? CreatedBy { get; set; }
-        public DateTime? ModifiedTime { get; set; }
-        public int? ModifiedBy { get; set; }
         public virtual ICollection<Product> Products { get; set; }
 
     }

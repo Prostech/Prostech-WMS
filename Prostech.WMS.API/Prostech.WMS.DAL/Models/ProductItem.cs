@@ -16,10 +16,6 @@ namespace Prostech.WMS.DAL.Models
         public bool IsStock { get; set; }
         public DateTime? InboundDate { get; set; }
         public DateTime? OutboundDate { get; set; }
-        public DateTime? CreatedTime { get; set; }
-        public int? CreatedBy { get; set; } = 1;
-        public DateTime? ModifiedTime { get; set;}
-        public int? ModifiedBy { get; set; }
         public int ProductItemStatusId { get; set; }
         public ProductItemStatus ProductItemStatus { get; set; }
     }
