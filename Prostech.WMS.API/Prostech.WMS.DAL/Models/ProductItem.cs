@@ -23,6 +23,5 @@ namespace Prostech.WMS.DAL.Models
         public int ProductItemStatusId { get; set; }
         public ProductItemStatus ProductItemStatus { get; set; }
         public virtual ICollection<ActionHistoryDetail> ActionHistoryDetails { get; }
-
     }
 }

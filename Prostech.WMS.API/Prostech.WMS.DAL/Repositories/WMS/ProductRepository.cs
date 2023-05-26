@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Prostech.WMS.DAL.Models;
 using Prostech.WMS.DAL.Repositories.WMS.Base;
 using Prostech.WMS.DAL.Repositories.WMS.Interface;
@@ -38,6 +39,11 @@ namespace Prostech.WMS.DAL.Repositories.WMS
                 .Include(_ => _.ProductItems)
                 .Where(_ => _.GUID == guid && _.IsActive == true)
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<Product> CreateProductAsync(Product product)
+        {
+            return await _wmsRepository.InsertAsync(product);
         }
     }
 }

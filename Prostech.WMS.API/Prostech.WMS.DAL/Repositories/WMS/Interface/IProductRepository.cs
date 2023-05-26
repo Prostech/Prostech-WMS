@@ -1,4 +1,5 @@
-﻿using Prostech.WMS.DAL.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using Prostech.WMS.DAL.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +12,6 @@ namespace Prostech.WMS.DAL.Repositories.WMS.Interface
     {
         Task<List<Product>> GetProductsListAsync();
         Task<Product> GetProductByGUIDAsync(Guid guid);
+        Task<Product> CreateProductAsync(Product product);
     }
 }

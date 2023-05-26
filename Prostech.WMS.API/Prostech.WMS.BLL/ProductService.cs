@@ -1,4 +1,5 @@
-﻿using Prostech.WMS.BLL.Helpers.Wrapper;
+﻿using Microsoft.AspNetCore.Mvc;
+using Prostech.WMS.BLL.Helpers.Wrapper;
 using Prostech.WMS.BLL.Interface;
 using Prostech.WMS.DAL.DTOs.ProductDTO;
 using Prostech.WMS.DAL.DTOs.ProductItemDTO;
@@ -120,6 +121,33 @@ namespace Prostech.WMS.BLL
                 Quantity = product.ProductItems.Count(_ => _.IsStock)
             };
             return result;
+        }
+
+        public async Task<Product> CreateProductAsync(ProductPost request)
+        {
+            Product product = new Product
+            {
+                ProductName = request.ProductName,
+                Description = request.Description,
+                BrandId = request.BrandId,
+                CategoryId = request.CategoryId,
+                IsActive = true,
+                CreatedBy = request.CreatedBy,
+                CreatedTime = DateTime.UtcNow,
+                ProductItems = Enumerable.Range(1, request.Quantity)
+                    .Select(_ => new ProductItem
+                    {
+                        Price = request.Price,
+                        IsStock = true,
+                        CreatedBy = request.CreatedBy,
+                        CreatedTime = DateTime.UtcNow,
+                        ProductItemStatusId = request.ProductItemStatusId,
+                        LatestInboundTime = DateTime.UtcNow,
+                    })
+                    .ToList(),
+            };
+            await _productRepository.CreateProductAsync(product);
+            return product;
         }
     }
 }

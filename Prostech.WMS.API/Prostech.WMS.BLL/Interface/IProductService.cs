@@ -1,4 +1,5 @@
-﻿using Prostech.WMS.DAL.DTOs.ProductDTO;
+﻿using Microsoft.AspNetCore.Mvc;
+using Prostech.WMS.DAL.DTOs.ProductDTO;
 using Prostech.WMS.DAL.DTOs.ProductItemDTO;
 using Prostech.WMS.DAL.Models;
 using System;
@@ -13,5 +14,6 @@ namespace Prostech.WMS.BLL.Interface
     {
         Task<List<ProductResponse>> GetProductsListAsync(ProductRequest request);
         Task<ProductResponse> GetProductByGUIDAsync(Guid guid);
+        Task<Product> CreateProductAsync(ProductPost request);
     }
 }

@@ -4,6 +4,7 @@ using Prostech.WMS.BLL.Interface;
 using Prostech.WMS.DAL.DTOs.ProductDTO;
 using Prostech.WMS.DAL.DTOs.ProductItemDTO;
 using Prostech.WMS.DAL.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace Prostech.WMS.API.Controllers
 {
@@ -64,6 +65,20 @@ namespace Prostech.WMS.API.Controllers
                     HttpContext.Response.StatusCode = 500;
                     return new JsonResult("There is no product by the guid");
                 }
+                HttpContext.Response.StatusCode = 500;
+                return new JsonResult(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateProductAsync([FromBody] [Required] ProductPost request)
+        {
+            try
+            {
+                return new JsonResult(await _productService.CreateProductAsync(request));
+            }
+            catch (Exception ex)
+            {
                 HttpContext.Response.StatusCode = 500;
                 return new JsonResult(ex.Message);
             }
