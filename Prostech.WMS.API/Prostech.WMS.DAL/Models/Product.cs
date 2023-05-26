@@ -12,7 +12,6 @@ namespace Prostech.WMS.DAL.Models
         public Product()
         { 
             ProductItems = new HashSet<ProductItem>();
-            ActionHistoryDetails = new HashSet<ActionHistoryDetail>();
         }
         public int ProductId { get; set; }
         public string ProductName { get; set; }
@@ -22,6 +21,5 @@ namespace Prostech.WMS.DAL.Models
         public int CategoryId { get; set; }
         public Category Category { get; set; }
         public virtual ICollection<ProductItem> ProductItems { get;}
-        public virtual ICollection<ActionHistoryDetail> ActionHistoryDetails { get;}
     }
 }

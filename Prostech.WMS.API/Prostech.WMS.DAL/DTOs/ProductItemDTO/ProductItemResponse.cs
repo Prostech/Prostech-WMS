@@ -21,5 +21,7 @@ namespace Prostech.WMS.DAL.DTOs.ProductItemDTO
         public int? CreatedBy { get; set; }
         public DateTime? ModifiedTime { get; set; }
         public int? ModifiedBy { get; set;}
+        public DateTime? LatestInboundTime { get; set; }
+        public DateTime? LatestOutboundTime { get; set; }
     }
 }

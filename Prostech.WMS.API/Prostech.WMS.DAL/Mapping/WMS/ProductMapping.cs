@@ -55,16 +55,12 @@ namespace Prostech.WMS.DAL.Mapping.WMS
                   .WithOne(pi => pi.Product)
                   .HasForeignKey(p => p.ProductId);
 
-            entity.HasMany(_ => _.ActionHistoryDetails)
-                  .WithOne(_ => _.Product)
-                  .HasForeignKey(_ => _.ProductId);
-
             entity.HasData(
                  new Product { ProductId = 1, ProductName = "Iphone 14" , Description = "Mô tả", BrandId = 1, CategoryId = 1, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
                  new Product { ProductId = 2, ProductName = "Samsung Galaxy S23", Description = "Mô tả", BrandId = 2, CategoryId = 1, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
                  new Product { ProductId = 3, ProductName = "Asus ROG", Description = "Mô tả", BrandId = 3, CategoryId = 2, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
                  new Product { ProductId = 4, ProductName = "Airpod", Description = "Mô tả", BrandId = 1, CategoryId = 3, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
-                 new Product {ProductId = 5, ProductName = "Xiaomi Plus 9", Description = "Mô tả", BrandId = 4, CategoryId = 1, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow }
+                 new Product {ProductId = 5, ProductName = "Xiaomi Plus 9", Description = "Mô tả", BrandId = 4, CategoryId = 2, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow }
             );
 
             base.Configure(entity);
