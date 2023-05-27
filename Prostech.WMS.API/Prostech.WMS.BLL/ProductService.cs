@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Prostech.WMS.BLL.Helpers.Wrapper;
 using Prostech.WMS.BLL.Interface;
+using Prostech.WMS.DAL.DBContext;
 using Prostech.WMS.DAL.DTOs.ProductDTO;
 using Prostech.WMS.DAL.DTOs.ProductItemDTO;
 using Prostech.WMS.DAL.Models;
@@ -15,11 +16,20 @@ namespace Prostech.WMS.BLL
 {
     public class ProductService : IProductService
     {
-        private IProductRepository _productRepository;
+        private readonly IProductRepository _productRepository;
+        private readonly IActionHistoryRepository _actionHistoryRepository;
+        private readonly IBrandrepository _brandRepository;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public ProductService(IProductRepository productRepository)
+        public ProductService(IProductRepository productRepository,
+            IActionHistoryRepository actionHistoryRepository,
+            IBrandrepository brandrepository,
+            ICategoryRepository categoryRepository)
         {
             _productRepository = productRepository;
+            _actionHistoryRepository = actionHistoryRepository;
+            _brandRepository = brandrepository;
+            _categoryRepository = categoryRepository;
         }
 
         public async Task<List<ProductResponse>> GetProductsListAsync(ProductRequest request)
@@ -123,7 +133,7 @@ namespace Prostech.WMS.BLL
             return result;
         }
 
-        public async Task<Product> CreateProductAsync(ProductPost request)
+        public async Task<ProductResponse> CreateProductAsync(ProductPost request)
         {
             Product product = new Product
             {
@@ -146,8 +156,64 @@ namespace Prostech.WMS.BLL
                     })
                     .ToList(),
             };
-            await _productRepository.CreateProductAsync(product);
-            return product;
+            
+            Product productAddResult = await _productRepository.CreateProductAsync(product);
+
+            ActionHistory actionHistory = new ActionHistory
+            {
+                ActionTypeId = (int)ActionTypeEnum.Inbound,
+                IsActive = true,
+                CreatedTime = DateTime.UtcNow,
+                CreatedBy = request.CreatedBy,
+                ActionHistoryDetails = product.ProductItems.Select(_ => new ActionHistoryDetail
+                {
+                    SKU = _.SKU,
+                    IsActive = true,
+                    CreatedTime = DateTime.UtcNow,
+                    CreatedBy = 1
+                })
+                .ToList()
+            };
+
+            ActionHistory actionHistoryAddResult = await _actionHistoryRepository.AddActionHistoryAsync(actionHistory);
+
+            ProductResponse result = new ProductResponse
+            {
+                ProductId = productAddResult.ProductId,
+                ProductName = productAddResult.ProductName,
+                BrandId = productAddResult.BrandId,
+                BrandName = _brandRepository.GetBrandNameByIdAsync(productAddResult.BrandId),
+                CategoryId = productAddResult.CategoryId,
+                Description = _categoryRepository.GetCategoryNameByIdAsync(productAddResult.CategoryId),
+                Quantity = productAddResult.ProductItems.Count,
+                GUID = productAddResult.GUID,
+                ActionHistoryId = actionHistoryAddResult.ActionHistoryId,
+                IsActive = productAddResult.IsActive,
+                CreatedBy = productAddResult.CreatedBy,
+                CreatedTime = productAddResult.CreatedTime,
+                ModifiedBy = productAddResult.ModifiedBy,
+                ModifiedTime = productAddResult.ModifiedTime,
+                ProductItems = productAddResult.ProductItems.Select(_ => new ProductItemResponse { 
+                    SKU = _.SKU,
+                    ProductId = _.ProductId,
+                    ProductName = productAddResult.ProductName,
+                    BrandId = productAddResult.BrandId,
+                    BrandName = _brandRepository.GetBrandNameByIdAsync(productAddResult.BrandId),
+                    CategoryId = productAddResult.CategoryId,
+                    CategoryName = _categoryRepository.GetCategoryNameByIdAsync(productAddResult.CategoryId),
+                    Price = _.Price,
+                    IsStock = _.IsStock,
+                    CreatedTime = _.CreatedTime,
+                    CreatedBy = _.CreatedBy,
+                    ModifiedTime = _.ModifiedTime,
+                    ModifiedBy = _.ModifiedBy,
+                    LatestInboundTime = _.LatestInboundTime,
+                    LatestOutboundTime = _.LatestOutboundTime,
+                })
+                .ToList()
+            };
+
+            return result;
         }
     }
 }

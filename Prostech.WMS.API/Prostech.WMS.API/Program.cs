@@ -71,6 +71,9 @@ builder.Services.AddScoped(typeof(IWMSGenericRepository<>), typeof(WMSGenericRep
 
 builder.Services.AddScoped<IProductItemRepository, ProductItemRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IActionHistoryRepository, ActionHistoryRepository>();
+builder.Services.AddScoped<IBrandrepository, BrandRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 

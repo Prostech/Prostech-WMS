@@ -19,6 +19,7 @@ namespace Prostech.WMS.DAL.DTOs.ProductDTO
         public string Description { get; set; }
         public int Quantity { get; set; }
         public Guid GUID { get; set; }
+        public int ActionHistoryId { get; set; }
         public List<ProductItemResponse> ProductItems { get; set; }
     }
 }
