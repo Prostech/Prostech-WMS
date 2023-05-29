@@ -71,11 +71,25 @@ namespace Prostech.WMS.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateProductAsync([FromBody] [Required] ProductPost request)
+        public async Task<IActionResult> AddProductAsync([FromBody] [Required] ProductPost request)
         {
             try
             {
-                return new JsonResult(await _productService.CreateProductAsync(request));
+                return new JsonResult(await _productService.AddProductAsync(request));
+            }
+            catch (Exception ex)
+            {
+                HttpContext.Response.StatusCode = 500;
+                return new JsonResult(ex.Message);
+            }
+        }
+
+        [HttpPatch]
+        public async Task<IActionResult> UpdateProductAsync([FromBody] ProductUpdate request)
+        {
+            try
+            {
+                return new JsonResult(await _productService.UpdateProductAsync(request));
             }
             catch (Exception ex)
             {

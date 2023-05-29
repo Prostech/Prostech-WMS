@@ -10,5 +10,6 @@ namespace Prostech.WMS.DAL.Repositories.WMS.Interface
     public interface IProductItemRepository
     {
         Task<List<ProductItem>> GetProductItemsListAsync();
+        List<ProductItem> GetProductItemsByProductIdAsync(int productId);
     }
 }

@@ -13,5 +13,6 @@ namespace Prostech.WMS.DAL.Repositories.WMS.Interface
         Task<List<Product>> GetProductsListAsync();
         Task<Product> GetProductByGUIDAsync(Guid guid);
         Task<Product> CreateProductAsync(Product product);
+        void UpdateProductAsync(Product product);
     }
 }

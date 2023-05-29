@@ -45,5 +45,10 @@ namespace Prostech.WMS.DAL.Repositories.WMS
         {
             return await _wmsRepository.InsertAsync(product);
         }
+
+        public async void UpdateProductAsync(Product product)
+        {
+            await _wmsRepository.UpdateAsync(product);
+        }
     }
 }

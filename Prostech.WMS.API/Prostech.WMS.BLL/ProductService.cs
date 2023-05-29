@@ -20,16 +20,19 @@ namespace Prostech.WMS.BLL
         private readonly IActionHistoryRepository _actionHistoryRepository;
         private readonly IBrandrepository _brandRepository;
         private readonly ICategoryRepository _categoryRepository;
+        private readonly IProductItemRepository _productItemRepository;
 
         public ProductService(IProductRepository productRepository,
             IActionHistoryRepository actionHistoryRepository,
             IBrandrepository brandrepository,
-            ICategoryRepository categoryRepository)
+            ICategoryRepository categoryRepository,
+            IProductItemRepository productItemRepository)
         {
             _productRepository = productRepository;
             _actionHistoryRepository = actionHistoryRepository;
             _brandRepository = brandrepository;
             _categoryRepository = categoryRepository;
+            _productItemRepository = productItemRepository;
         }
 
         public async Task<List<ProductResponse>> GetProductsListAsync(ProductRequest request)
@@ -133,7 +136,7 @@ namespace Prostech.WMS.BLL
             return result;
         }
 
-        public async Task<ProductResponse> CreateProductAsync(ProductPost request)
+        public async Task<ProductResponse> AddProductAsync(ProductPost request)
         {
             Product product = new Product
             {
@@ -214,6 +217,60 @@ namespace Prostech.WMS.BLL
             };
 
             return result;
+        }
+
+        public async Task<Product> UpdateProductAsync(ProductUpdate request)
+        {
+            Product product = new Product
+            {
+                ProductName = request.ProductName,
+                Description = request.Description,
+                BrandId = request.BrandId,
+                CategoryId = request.CategoryId,
+                ModifiedBy = request.ModifiedBy,
+                ProductItems = _productItemRepository.GetProductItemsByProductIdAsync(request.ProductId),
+            };
+
+            _productRepository.UpdateProductAsync(product);
+
+            //ProductResponse result = new ProductResponse
+            //{
+            //    ProductId = productAddResult.ProductId,
+            //    ProductName = productAddResult.ProductName,
+            //    BrandId = productAddResult.BrandId,
+            //    BrandName = _brandRepository.GetBrandNameByIdAsync(productAddResult.BrandId),
+            //    CategoryId = productAddResult.CategoryId,
+            //    Description = _categoryRepository.GetCategoryNameByIdAsync(productAddResult.CategoryId),
+            //    Quantity = productAddResult.ProductItems.Count,
+            //    GUID = productAddResult.GUID,
+            //    ActionHistoryId = actionHistoryAddResult.ActionHistoryId,
+            //    IsActive = productAddResult.IsActive,
+            //    CreatedBy = productAddResult.CreatedBy,
+            //    CreatedTime = productAddResult.CreatedTime,
+            //    ModifiedBy = productAddResult.ModifiedBy,
+            //    ModifiedTime = productAddResult.ModifiedTime,
+            //    ProductItems = productAddResult.ProductItems.Select(_ => new ProductItemResponse
+            //    {
+            //        SKU = _.SKU,
+            //        ProductId = _.ProductId,
+            //        ProductName = productAddResult.ProductName,
+            //        BrandId = productAddResult.BrandId,
+            //        BrandName = _brandRepository.GetBrandNameByIdAsync(productAddResult.BrandId),
+            //        CategoryId = productAddResult.CategoryId,
+            //        CategoryName = _categoryRepository.GetCategoryNameByIdAsync(productAddResult.CategoryId),
+            //        Price = _.Price,
+            //        IsStock = _.IsStock,
+            //        CreatedTime = _.CreatedTime,
+            //        CreatedBy = _.CreatedBy,
+            //        ModifiedTime = _.ModifiedTime,
+            //        ModifiedBy = _.ModifiedBy,
+            //        LatestInboundTime = _.LatestInboundTime,
+            //        LatestOutboundTime = _.LatestOutboundTime,
+            //    })
+            //    .ToList()
+            //};
+
+            return product;
         }
     }
 }
