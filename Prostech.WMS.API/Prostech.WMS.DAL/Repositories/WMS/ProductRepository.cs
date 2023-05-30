@@ -26,6 +26,9 @@ namespace Prostech.WMS.DAL.Repositories.WMS
                 .Include(_ => _.Brand)
                 .Include(_ => _.Category)
                 .Include(_ => _.ProductItems)
+                .ThenInclude(_ => _.ProductItemStatus)
+                .Include(_ => _.ProductItems)
+                .ThenInclude(_ => _.ActionHistoryDetails)
                 .OrderBy(_ => _.ProductId)
                 .Where(_ => _.IsActive == true)
                 .ToListAsync();
@@ -37,6 +40,9 @@ namespace Prostech.WMS.DAL.Repositories.WMS
                 .Include(_ => _.Brand)
                 .Include(_ => _.Category)
                 .Include(_ => _.ProductItems)
+                .ThenInclude(_ => _.ProductItemStatus)
+                .Include(_ => _.ProductItems)
+                .ThenInclude(_ => _.ActionHistoryDetails)
                 .Where(_ => _.GUID == guid && _.IsActive == true)
                 .FirstOrDefaultAsync();
         }
@@ -46,7 +52,7 @@ namespace Prostech.WMS.DAL.Repositories.WMS
             return await _wmsRepository.InsertAsync(product);
         }
 
-        public async void UpdateProductAsync(Product product)
+        public async Task UpdateProductAsync(Product product)
         {
             await _wmsRepository.UpdateAsync(product);
         }

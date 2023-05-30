@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Prostech.WMS.BLL.Helpers.ValueChecker;
 using Prostech.WMS.BLL.Helpers.Wrapper;
 using Prostech.WMS.BLL.Interface;
 using Prostech.WMS.DAL.DBContext;
@@ -21,18 +22,21 @@ namespace Prostech.WMS.BLL
         private readonly IBrandrepository _brandRepository;
         private readonly ICategoryRepository _categoryRepository;
         private readonly IProductItemRepository _productItemRepository;
+        private readonly IProductItemStatusRepository _productItemStatusRepository;
 
         public ProductService(IProductRepository productRepository,
             IActionHistoryRepository actionHistoryRepository,
             IBrandrepository brandrepository,
             ICategoryRepository categoryRepository,
-            IProductItemRepository productItemRepository)
+            IProductItemRepository productItemRepository,
+            IProductItemStatusRepository productItemStatusRepository)
         {
             _productRepository = productRepository;
             _actionHistoryRepository = actionHistoryRepository;
             _brandRepository = brandrepository;
             _categoryRepository = categoryRepository;
             _productItemRepository = productItemRepository;
+            _productItemStatusRepository = productItemStatusRepository;
         }
 
         public async Task<List<ProductResponse>> GetProductsListAsync(ProductRequest request)
@@ -58,6 +62,10 @@ namespace Prostech.WMS.BLL
                 ModifiedTime = _.ModifiedTime,
                 IsActive = _.IsActive,
                 GUID = _.GUID,
+                ProductItemStatusId = _.ProductItems.Select(_ => _.ProductItemStatusId).FirstOrDefault(),
+                ProductItemStatusName = _.ProductItems.Select(_ => _.ProductItemStatus.ProductItemStatusName).FirstOrDefault(),
+                Price = _.ProductItems.Select(_ => _.Price).FirstOrDefault(),
+                ActionHistoryId = _.ProductItems.Select(_ => _.ActionHistoryDetails.Select(_ => _.ActionHistoryId).FirstOrDefault()).FirstOrDefault(),
                 ProductItems = _.ProductItems.Select(_ => new ProductItemResponse
                 {
                     SKU = _.SKU,
@@ -67,7 +75,6 @@ namespace Prostech.WMS.BLL
                     BrandName = _.Product.Brand.BrandName,
                     CategoryId = _.Product.CategoryId,
                     CategoryName = _.Product.Category.CategoryName,
-                    Price = _.Price,
                     IsStock = _.IsStock,
                     CreatedTime = _.CreatedTime,
                     CreatedBy = _.CreatedBy,
@@ -111,6 +118,10 @@ namespace Prostech.WMS.BLL
                 ModifiedTime = product.ModifiedTime,
                 IsActive = product.IsActive,
                 GUID = product.GUID,
+                ProductItemStatusId = product.ProductItems.Select(_ => _.ProductItemStatusId).FirstOrDefault(),
+                ProductItemStatusName = product.ProductItems.Select(_ => _.ProductItemStatus.ProductItemStatusName).FirstOrDefault(),
+                Price = product.ProductItems.Select(_ => _.Price).FirstOrDefault(),
+                ActionHistoryId = product.ProductItems.Select(_ => _.ActionHistoryDetails.Select(_ => _.ActionHistoryId).FirstOrDefault()).FirstOrDefault(),
                 ProductItems = product.ProductItems.Select(_ => new ProductItemResponse {
                     SKU = _.SKU,
                     ProductId = _.ProductId,
@@ -119,7 +130,6 @@ namespace Prostech.WMS.BLL
                     BrandName = _.Product.Brand.BrandName,
                     CategoryId = _.Product.CategoryId,
                     CategoryName = _.Product.Category.CategoryName,
-                    Price = _.Price,
                     IsStock = _.IsStock,
                     CreatedTime = _.CreatedTime,
                     CreatedBy = _.CreatedBy,
@@ -196,6 +206,9 @@ namespace Prostech.WMS.BLL
                 CreatedTime = productAddResult.CreatedTime,
                 ModifiedBy = productAddResult.ModifiedBy,
                 ModifiedTime = productAddResult.ModifiedTime,
+                ProductItemStatusId = productAddResult.ProductItems.Select(_ => _.ProductItemStatusId).FirstOrDefault(),
+                ProductItemStatusName = _productItemStatusRepository.GetProductItemStatusById(productAddResult.ProductItems.Select(_ => _.ProductItemStatusId).FirstOrDefault()),
+                Price = productAddResult.ProductItems.Select(_ => _.Price).FirstOrDefault(),
                 ProductItems = productAddResult.ProductItems.Select(_ => new ProductItemResponse { 
                     SKU = _.SKU,
                     ProductId = _.ProductId,
@@ -204,7 +217,6 @@ namespace Prostech.WMS.BLL
                     BrandName = _brandRepository.GetBrandNameByIdAsync(productAddResult.BrandId),
                     CategoryId = productAddResult.CategoryId,
                     CategoryName = _categoryRepository.GetCategoryNameByIdAsync(productAddResult.CategoryId),
-                    Price = _.Price,
                     IsStock = _.IsStock,
                     CreatedTime = _.CreatedTime,
                     CreatedBy = _.CreatedBy,
@@ -219,58 +231,77 @@ namespace Prostech.WMS.BLL
             return result;
         }
 
-        public async Task<Product> UpdateProductAsync(ProductUpdate request)
+        public async Task<ProductResponse> UpdateProductAsync(ProductUpdate request)
         {
-            Product product = new Product
+            if (ValueCheckerHelper.IsNull(request.GUID) || ValueCheckerHelper.IsNullOrZero(request.ModifiedBy))
             {
-                ProductName = request.ProductName,
-                Description = request.Description,
-                BrandId = request.BrandId,
-                CategoryId = request.CategoryId,
-                ModifiedBy = request.ModifiedBy,
-                ProductItems = _productItemRepository.GetProductItemsByProductIdAsync(request.ProductId),
+                throw new Exception("Please input guid and modifiedby");
+            }
+
+            Product existingProduct = await _productRepository.GetProductByGUIDAsync(request.GUID);
+
+            if (ValueCheckerHelper.IsNull(existingProduct))
+            {
+                throw new Exception("Product not found");
+            }
+
+            existingProduct.ProductName = ValueCheckerHelper.IsNotNullOrEmpty(request.ProductName) ? request.ProductName : existingProduct.ProductName;
+            existingProduct.Description = ValueCheckerHelper.IsNotNullOrEmpty(request.Description) ? request.Description : existingProduct.Description;
+            existingProduct.BrandId = request.BrandId != 0 ? request.BrandId : existingProduct.BrandId;
+            existingProduct.CategoryId = request.CategoryId != 0 ? request.CategoryId : existingProduct.CategoryId;
+            existingProduct.ModifiedBy = request.ModifiedBy != 0 ? request.ModifiedBy : existingProduct.ModifiedBy;
+            existingProduct.ModifiedTime = DateTime.UtcNow;
+            existingProduct.ProductItems = existingProduct.ProductItems.Select(_ =>
+            {
+                _.Price = request.Price != 0 ? request.Price : _.Price;
+                _.ProductItemStatusId = request.ProductItemStatusId != 0 ? request.ProductItemStatusId : _.ProductItemStatusId;
+                _.ModifiedBy = request.ModifiedBy;
+                _.ModifiedTime = DateTime.UtcNow;
+                return _;
+            }).ToList();
+
+            await _productRepository.UpdateProductAsync(existingProduct);
+
+            ProductResponse result = new ProductResponse
+            {
+                ProductId = existingProduct.ProductId,
+                ProductName = existingProduct.ProductName,
+                BrandId = existingProduct.BrandId,
+                BrandName = _brandRepository.GetBrandNameByIdAsync(existingProduct.BrandId),
+                CategoryId = existingProduct.CategoryId,
+                Description = _categoryRepository.GetCategoryNameByIdAsync(existingProduct.CategoryId),
+                Quantity = existingProduct.ProductItems.Count,
+                GUID = existingProduct.GUID,
+                IsActive = existingProduct.IsActive,
+                CreatedBy = existingProduct.CreatedBy,
+                CreatedTime = existingProduct.CreatedTime,
+                ModifiedBy = existingProduct.ModifiedBy,
+                ModifiedTime = existingProduct.ModifiedTime,
+                ProductItemStatusId = existingProduct.ProductItems.Select(_ => _.ProductItemStatusId).FirstOrDefault(),
+                ProductItemStatusName = _productItemStatusRepository.GetProductItemStatusById(existingProduct.ProductItems.Select(_ => _.ProductItemStatusId).FirstOrDefault()),
+                Price = existingProduct.ProductItems.Select(_ => _.Price).FirstOrDefault(),
+                ProductItems = existingProduct.ProductItems.Select(_ => new ProductItemResponse
+                {
+                    SKU = _.SKU,
+                    ProductId = _.ProductId,
+                    ProductName = existingProduct.ProductName,
+                    BrandId = existingProduct.BrandId,
+                    BrandName = _brandRepository.GetBrandNameByIdAsync(existingProduct.BrandId),
+                    CategoryId = existingProduct.CategoryId,
+                    CategoryName = _categoryRepository.GetCategoryNameByIdAsync(existingProduct.CategoryId),
+                    IsStock = _.IsStock,
+                    CreatedTime = _.CreatedTime,
+                    CreatedBy = _.CreatedBy,
+                    ModifiedTime = _.ModifiedTime,
+                    ModifiedBy = _.ModifiedBy,
+                    LatestInboundTime = _.LatestInboundTime,
+                    LatestOutboundTime = _.LatestOutboundTime,
+                })
+                .ToList()
             };
 
-            _productRepository.UpdateProductAsync(product);
-
-            //ProductResponse result = new ProductResponse
-            //{
-            //    ProductId = productAddResult.ProductId,
-            //    ProductName = productAddResult.ProductName,
-            //    BrandId = productAddResult.BrandId,
-            //    BrandName = _brandRepository.GetBrandNameByIdAsync(productAddResult.BrandId),
-            //    CategoryId = productAddResult.CategoryId,
-            //    Description = _categoryRepository.GetCategoryNameByIdAsync(productAddResult.CategoryId),
-            //    Quantity = productAddResult.ProductItems.Count,
-            //    GUID = productAddResult.GUID,
-            //    ActionHistoryId = actionHistoryAddResult.ActionHistoryId,
-            //    IsActive = productAddResult.IsActive,
-            //    CreatedBy = productAddResult.CreatedBy,
-            //    CreatedTime = productAddResult.CreatedTime,
-            //    ModifiedBy = productAddResult.ModifiedBy,
-            //    ModifiedTime = productAddResult.ModifiedTime,
-            //    ProductItems = productAddResult.ProductItems.Select(_ => new ProductItemResponse
-            //    {
-            //        SKU = _.SKU,
-            //        ProductId = _.ProductId,
-            //        ProductName = productAddResult.ProductName,
-            //        BrandId = productAddResult.BrandId,
-            //        BrandName = _brandRepository.GetBrandNameByIdAsync(productAddResult.BrandId),
-            //        CategoryId = productAddResult.CategoryId,
-            //        CategoryName = _categoryRepository.GetCategoryNameByIdAsync(productAddResult.CategoryId),
-            //        Price = _.Price,
-            //        IsStock = _.IsStock,
-            //        CreatedTime = _.CreatedTime,
-            //        CreatedBy = _.CreatedBy,
-            //        ModifiedTime = _.ModifiedTime,
-            //        ModifiedBy = _.ModifiedBy,
-            //        LatestInboundTime = _.LatestInboundTime,
-            //        LatestOutboundTime = _.LatestOutboundTime,
-            //    })
-            //    .ToList()
-            //};
-
-            return product;
+            return result;
         }
+
     }
 }

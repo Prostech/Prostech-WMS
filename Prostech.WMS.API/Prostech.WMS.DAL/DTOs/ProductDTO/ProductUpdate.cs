@@ -8,12 +8,13 @@ namespace Prostech.WMS.DAL.DTOs.ProductDTO
 {
     public class ProductUpdate
     {
-        public int ProductId { get; set; } 
-        public string ProductName { get; set; }
-        public string Description { get; set; }
-        public int BrandId { get; set; }
-        public int CategoryId { get; set; }
-        public int ModifiedBy { get; set; }
-        public decimal Price { get; set; }
+        public Guid GUID { get; set; } 
+        public string ProductName { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public int BrandId { get; set; } = 0;
+        public int CategoryId { get; set; } = 0;
+        public int ProductItemStatusId { get; set; } = 0;
+        public int ModifiedBy { get; set; } = 0;
+        public decimal Price { get; set; } = 0;
     }
 }

@@ -15,6 +15,6 @@ namespace Prostech.WMS.BLL.Interface
         Task<List<ProductResponse>> GetProductsListAsync(ProductRequest request);
         Task<ProductResponse> GetProductByGUIDAsync(Guid guid);
         Task<ProductResponse> AddProductAsync(ProductPost request);
-        Task<Product> UpdateProductAsync(ProductUpdate request);
+        Task<ProductResponse> UpdateProductAsync(ProductUpdate request);
     }
 }

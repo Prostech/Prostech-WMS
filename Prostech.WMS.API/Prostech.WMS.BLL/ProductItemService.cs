@@ -40,7 +40,6 @@ namespace Prostech.WMS.BLL
                     BrandName = pi.Product.Brand.BrandName,
                     CategoryId = pi.Product.CategoryId,
                     CategoryName = pi.Product.Category.CategoryName,
-                    Price = pi.Price,
                     IsStock = pi.IsStock,
                     CreatedTime = pi.CreatedTime,
                     CreatedBy = pi.CreatedBy,

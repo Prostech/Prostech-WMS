@@ -74,6 +74,7 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IActionHistoryRepository, ActionHistoryRepository>();
 builder.Services.AddScoped<IBrandrepository, BrandRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IProductItemStatusRepository, ProductItemStatusRepository>();
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
