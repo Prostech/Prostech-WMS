@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Prostech.WMS.DAL.DTOs.ProductItemDTO
+namespace Prostech.WMS.DAL.DTOs.ProductDTO
 {
-    public class ProductItemRequest : BaseRequestEntitty
+    public class ProductRequest : BaseRequestEntitty
     {
 
     }

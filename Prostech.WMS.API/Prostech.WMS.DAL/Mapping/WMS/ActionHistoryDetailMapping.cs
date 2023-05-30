@@ -23,7 +23,7 @@ namespace Prostech.WMS.DAL.Mapping.WMS
         {
             entity.ToTable(nameof(ActionHistoryDetail), "public");
 
-            entity.HasKey(_ => new {_.ProductId, _.ActionHistoryId});
+            entity.HasKey(_ => new {_.SKU, _.ActionHistoryId});
 
             entity.Property(_ => _.IsActive).IsRequired();
 
@@ -37,20 +37,36 @@ namespace Prostech.WMS.DAL.Mapping.WMS
 
             entity.Property(_ => _.GUID).HasDefaultValueSql("gen_random_uuid()");
 
-            entity.HasOne(_ => _.Product)
+            entity.HasOne(_ => _.ProductItem)
                   .WithMany(_ => _.ActionHistoryDetails)
-                  .HasForeignKey(_ => _.ProductId);
+                  .HasForeignKey(_ => _.SKU);
 
             entity.HasOne(_ => _.ActionHistory)
                   .WithMany(_ => _.ActionHistoryDetails)
                   .HasForeignKey(_ => _.ActionHistoryId);
 
             entity.HasData(
-                 new ActionHistoryDetail { ActionHistoryId = 1, ProductId = 1, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
-                 new ActionHistoryDetail { ActionHistoryId = 1, ProductId = 2, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
-                 new ActionHistoryDetail { ActionHistoryId = 1, ProductId = 3, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
-                 new ActionHistoryDetail { ActionHistoryId = 1, ProductId = 4, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
-                 new ActionHistoryDetail { ActionHistoryId = 1, ProductId = 5, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow }
+                 new ActionHistoryDetail { ActionHistoryId = 1, SKU = 1, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new ActionHistoryDetail { ActionHistoryId = 1, SKU = 2, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new ActionHistoryDetail { ActionHistoryId = 1, SKU = 3, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new ActionHistoryDetail { ActionHistoryId = 1, SKU = 4, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new ActionHistoryDetail { ActionHistoryId = 1, SKU = 5, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new ActionHistoryDetail { ActionHistoryId = 1, SKU = 6, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new ActionHistoryDetail { ActionHistoryId = 1, SKU = 7, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new ActionHistoryDetail { ActionHistoryId = 1, SKU = 8, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new ActionHistoryDetail { ActionHistoryId = 1, SKU = 9, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new ActionHistoryDetail { ActionHistoryId = 1, SKU = 10, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new ActionHistoryDetail { ActionHistoryId = 1, SKU = 11, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new ActionHistoryDetail { ActionHistoryId = 1, SKU = 12, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new ActionHistoryDetail { ActionHistoryId = 1, SKU = 13, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new ActionHistoryDetail { ActionHistoryId = 1, SKU = 14, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new ActionHistoryDetail { ActionHistoryId = 1, SKU = 15, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new ActionHistoryDetail { ActionHistoryId = 1, SKU = 16, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new ActionHistoryDetail { ActionHistoryId = 1, SKU = 17, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new ActionHistoryDetail { ActionHistoryId = 1, SKU = 18, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new ActionHistoryDetail { ActionHistoryId = 1, SKU = 19, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new ActionHistoryDetail { ActionHistoryId = 1, SKU = 20, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new ActionHistoryDetail { ActionHistoryId = 2, SKU = 19, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow.AddHours(1) }
             );
 
             base.Configure(entity);

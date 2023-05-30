@@ -22,7 +22,7 @@ namespace Prostech.WMS.BLL
             _productItemRepository = productItemRepository;
         }
 
-        public async Task<List<ProductItemResponse>> GetProductItemsListAsync(ProductItemRequest req)
+        public async Task<List<ProductItemResponse>> GetProductItemsListAsync(ProductItemRequest request)
         {
             List<ProductItem> productItems = new List<ProductItem>();
 
@@ -40,15 +40,16 @@ namespace Prostech.WMS.BLL
                     BrandName = pi.Product.Brand.BrandName,
                     CategoryId = pi.Product.CategoryId,
                     CategoryName = pi.Product.Category.CategoryName,
-                    Price = pi.Price,
                     IsStock = pi.IsStock,
                     CreatedTime = pi.CreatedTime,
                     CreatedBy = pi.CreatedBy,
                     ModifiedTime = pi.ModifiedTime,
                     ModifiedBy = pi.ModifiedBy,
+                    LatestInboundTime = pi.LatestInboundTime,
+                    LatestOutboundTime = pi.LatestOutboundTime
                 })
-                .Skip((req.Page - 1) * req.PageSize)
-                .Take(req.PageSize)
+                .Skip((request.Page - 1) * request.PageSize)
+                .Take(request.PageSize)
                 .ToList();
 
             return result;

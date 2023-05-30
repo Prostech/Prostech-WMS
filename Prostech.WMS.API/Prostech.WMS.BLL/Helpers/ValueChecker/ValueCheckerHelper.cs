@@ -47,5 +47,13 @@ namespace Prostech.WMS.BLL.Helpers.ValueChecker
         {
             return list != null && list.Count != 0;
         }
+        public static bool IsNull(object value)
+        {
+            return value == null;
+        }
+        public static bool IsNotNull(object value)
+        {
+            return value != null;
+        }
     }
 }

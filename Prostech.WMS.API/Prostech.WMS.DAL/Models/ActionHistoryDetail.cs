@@ -9,8 +9,8 @@ namespace Prostech.WMS.DAL.Models
 {
     public class ActionHistoryDetail : BaseEntity
     {
-        public int ProductId { get; set; }
-        public Product Product { get; set; }
+        public int SKU { get; set; }
+        public ProductItem ProductItem { get; set; }
         public int ActionHistoryId { get; set; }
         public ActionHistory ActionHistory { get; set; }
     }

@@ -64,11 +64,17 @@ new WMSContext(new DbContextOptionsBuilder<WMSContext>().UseNpgsql(wmsDbConnStr)
 
 //Service
 builder.Services.AddScoped<IProductItemService, ProductItemService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
 //Repository
 builder.Services.AddScoped(typeof(IWMSGenericRepository<>), typeof(WMSGenericRepository<>));
 
 builder.Services.AddScoped<IProductItemRepository, ProductItemRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IActionHistoryRepository, ActionHistoryRepository>();
+builder.Services.AddScoped<IBrandrepository, BrandRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IProductItemStatusRepository, ProductItemStatusRepository>();
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 

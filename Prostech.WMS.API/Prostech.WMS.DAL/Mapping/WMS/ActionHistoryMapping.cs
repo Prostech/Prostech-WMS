@@ -46,7 +46,8 @@ namespace Prostech.WMS.DAL.Mapping.WMS
                   .HasForeignKey(_ => _.ActionHistoryId);
 
             entity.HasData(
-                 new ActionHistory { ActionHistoryId = 1, ActionTypeId = 1, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow }
+                 new ActionHistory { ActionHistoryId = 1, ActionTypeId = 1, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow },
+                 new ActionHistory { ActionHistoryId = 2, ActionTypeId = 2, IsActive = true, CreatedBy = 1, CreatedTime = DateTime.UtcNow.AddHours(1) }
             );
 
             base.Configure(entity);

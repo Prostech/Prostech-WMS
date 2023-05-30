@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace Prostech.WMS.DAL.Repositories.WMS.Interface
 {
-    public interface IProductItemRepository
+    public interface ICategoryRepository
     {
-        Task<List<ProductItem>> GetProductItemsListAsync();
-        List<ProductItem> GetProductItemsByProductIdAsync(int productId);
+        string GetCategoryNameByIdAsync(int categoryId);
     }
 }
