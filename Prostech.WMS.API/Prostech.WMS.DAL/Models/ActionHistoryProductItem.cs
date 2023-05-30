@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace Prostech.WMS.DAL.Models
 {
-    public class InOutHistory
+    internal class ActionHistoryProductItem
     {
-
     }
 }

@@ -15,11 +15,12 @@ namespace Prostech.WMS.DAL.DTOs.ProductItemDTO
         public string BrandName { get; set;}
         public int CategoryId { get; set; }
         public string CategoryName { get; set; }
-        public decimal Price { get; set; }
         public bool IsStock { get; set; }
         public DateTime? CreatedTime { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? ModifiedTime { get; set; }
         public int? ModifiedBy { get; set;}
+        public DateTime? LatestInboundTime { get; set; }
+        public DateTime? LatestOutboundTime { get; set; }
     }
 }

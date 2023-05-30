@@ -20,6 +20,6 @@ namespace Prostech.WMS.DAL.Models
         public Brand Brand { get; set; }
         public int CategoryId { get; set; }
         public Category Category { get; set; }
-        public virtual ICollection<ProductItem> ProductItems { get;}
+        public virtual ICollection<ProductItem> ProductItems { get; set; }
     }
 }

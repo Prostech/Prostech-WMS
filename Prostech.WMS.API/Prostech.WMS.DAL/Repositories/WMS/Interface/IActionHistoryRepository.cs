@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace Prostech.WMS.DAL.Repositories.WMS.Interface
 {
-    public interface IProductItemRepository
+    public interface IActionHistoryRepository
     {
-        Task<List<ProductItem>> GetProductItemsListAsync();
-        List<ProductItem> GetProductItemsByProductIdAsync(int productId);
+        Task<ActionHistory> AddActionHistoryAsync (ActionHistory actionHistory);
     }
 }

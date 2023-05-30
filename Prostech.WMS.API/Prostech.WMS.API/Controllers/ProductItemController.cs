@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Prostech.WMS.BLL.Helpers.ValueChecker;
 using Prostech.WMS.BLL.Interface;
 using Prostech.WMS.DAL.DTOs.ProductItemDTO;
 using Prostech.WMS.DAL.Models;
@@ -17,7 +18,7 @@ namespace Prostech.WMS.API.Controllers
             _productItemService = productItemService;
         }
 
-        [HttpGet("product-item")]
+        [HttpGet]
         public async Task<IActionResult> GetProductItemsAsync([FromQuery] ProductItemRequest request)
         {
             List<ProductItemResponse> productItem = new List<ProductItemResponse>();
@@ -25,11 +26,17 @@ namespace Prostech.WMS.API.Controllers
             {
                 productItem = await _productItemService.GetProductItemsListAsync(request);
 
+                if(ValueCheckerHelper.IsNullOrEmpty(productItem))
+                {
+                    HttpContext.Response.StatusCode = 400;
+                    return new JsonResult("There is no product item");
+                }
+
                 return new JsonResult(productItem);
             }
             catch (Exception ex)
             {
-                HttpContext.Response.StatusCode = 400;
+                HttpContext.Response.StatusCode = 500;
                 return new JsonResult(ex.Message);
             }
         }

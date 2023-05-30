@@ -1,4 +1,6 @@
-﻿using Prostech.WMS.DAL.DTOs.ProductItemDTO;
+﻿using Microsoft.AspNetCore.Mvc;
+using Prostech.WMS.DAL.DTOs.ProductDTO;
+using Prostech.WMS.DAL.DTOs.ProductItemDTO;
 using Prostech.WMS.DAL.Models;
 using System;
 using System.Collections.Generic;
