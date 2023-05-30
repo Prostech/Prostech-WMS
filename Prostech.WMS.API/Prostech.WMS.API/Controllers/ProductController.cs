@@ -87,9 +87,27 @@ namespace Prostech.WMS.API.Controllers
         [HttpPatch]
         public async Task<IActionResult> UpdateProductAsync([FromBody] ProductUpdate request)
         {
+            if (ValueCheckerHelper.IsNull(request.GUID) || ValueCheckerHelper.IsNullOrZero(request.ModifiedBy))
+            {
+                throw new Exception("Please input GUID and ModifiedBy");
+            }
             try
             {
                 return new JsonResult(await _productService.UpdateProductAsync(request));
+            }
+            catch (Exception ex)
+            {
+                HttpContext.Response.StatusCode = 500;
+                return new JsonResult(ex.Message);
+            }
+        }
+
+        [HttpDelete("guid")]
+        public async Task<IActionResult> DeleteProductAsync([FromQuery] [Required] Guid guid)
+        {
+            try
+            {
+                return new JsonResult(await _productService.DeleteProductAsync(guid));
             }
             catch (Exception ex)
             {

@@ -101,6 +101,11 @@ namespace Prostech.WMS.BLL
 
             product = await _productRepository.GetProductByGUIDAsync(guid);
 
+            if (ValueCheckerHelper.IsNull(product))
+            {
+                throw new Exception("Product not found");
+            }
+
             ServiceConstants.SetTotalRecords(1);
 
             ProductResponse result = new ProductResponse
@@ -233,11 +238,6 @@ namespace Prostech.WMS.BLL
 
         public async Task<ProductResponse> UpdateProductAsync(ProductUpdate request)
         {
-            if (ValueCheckerHelper.IsNull(request.GUID) || ValueCheckerHelper.IsNullOrZero(request.ModifiedBy))
-            {
-                throw new Exception("Please input guid and modifiedby");
-            }
-
             Product existingProduct = await _productRepository.GetProductByGUIDAsync(request.GUID);
 
             if (ValueCheckerHelper.IsNull(existingProduct))
@@ -302,6 +302,65 @@ namespace Prostech.WMS.BLL
 
             return result;
         }
+        public async Task<ProductResponse> DeleteProductAsync(Guid guid)
+        {
+            Product existingProduct = await _productRepository.GetProductByGUIDAsync(guid);
 
+            if (ValueCheckerHelper.IsNull(existingProduct))
+            {
+                throw new Exception("Product not found");
+            }
+
+            existingProduct.IsActive = false;
+            existingProduct.ModifiedTime = DateTime.UtcNow;
+            existingProduct.ProductItems = existingProduct.ProductItems.Select(_ =>
+            {
+                _.IsStock = false;
+                _.ModifiedTime = DateTime.UtcNow;
+                return _;
+            }).ToList();
+
+            await _productRepository.UpdateProductAsync(existingProduct);
+
+            ProductResponse result = new ProductResponse
+            {
+                ProductId = existingProduct.ProductId,
+                ProductName = existingProduct.ProductName,
+                BrandId = existingProduct.BrandId,
+                BrandName = _brandRepository.GetBrandNameByIdAsync(existingProduct.BrandId),
+                CategoryId = existingProduct.CategoryId,
+                Description = _categoryRepository.GetCategoryNameByIdAsync(existingProduct.CategoryId),
+                Quantity = existingProduct.ProductItems.Count,
+                GUID = existingProduct.GUID,
+                IsActive = existingProduct.IsActive,
+                CreatedBy = existingProduct.CreatedBy,
+                CreatedTime = existingProduct.CreatedTime,
+                ModifiedBy = existingProduct.ModifiedBy,
+                ModifiedTime = existingProduct.ModifiedTime,
+                ProductItemStatusId = existingProduct.ProductItems.Select(_ => _.ProductItemStatusId).FirstOrDefault(),
+                ProductItemStatusName = _productItemStatusRepository.GetProductItemStatusById(existingProduct.ProductItems.Select(_ => _.ProductItemStatusId).FirstOrDefault()),
+                Price = existingProduct.ProductItems.Select(_ => _.Price).FirstOrDefault(),
+                ProductItems = existingProduct.ProductItems.Select(_ => new ProductItemResponse
+                {
+                    SKU = _.SKU,
+                    ProductId = _.ProductId,
+                    ProductName = existingProduct.ProductName,
+                    BrandId = existingProduct.BrandId,
+                    BrandName = _brandRepository.GetBrandNameByIdAsync(existingProduct.BrandId),
+                    CategoryId = existingProduct.CategoryId,
+                    CategoryName = _categoryRepository.GetCategoryNameByIdAsync(existingProduct.CategoryId),
+                    IsStock = _.IsStock,
+                    CreatedTime = _.CreatedTime,
+                    CreatedBy = _.CreatedBy,
+                    ModifiedTime = _.ModifiedTime,
+                    ModifiedBy = _.ModifiedBy,
+                    LatestInboundTime = _.LatestInboundTime,
+                    LatestOutboundTime = _.LatestOutboundTime,
+                })
+                .ToList()
+            };
+
+            return result;
+        }
     }
 }
