@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Prostech.WMS.BLL.Helpers.ValueChecker;
 using Prostech.WMS.BLL.Helpers.Wrapper;
 using Prostech.WMS.BLL.Interface;
@@ -22,18 +23,25 @@ namespace Prostech.WMS.BLL
         private readonly IBrandrepository _brandRepository;
         private readonly ICategoryRepository _categoryRepository;
         private readonly IProductItemStatusRepository _productItemStatusRepository;
+        private readonly IMapper _mapper;
+        private Mapper _productMapper;
 
         public ProductService(IProductRepository productRepository,
             IActionHistoryRepository actionHistoryRepository,
             IBrandrepository brandrepository,
             ICategoryRepository categoryRepository,
-            IProductItemStatusRepository productItemStatusRepository)
+            IProductItemStatusRepository productItemStatusRepository,
+            IMapper mapper)
         {
             _productRepository = productRepository;
             _actionHistoryRepository = actionHistoryRepository;
             _brandRepository = brandrepository;
             _categoryRepository = categoryRepository;
             _productItemStatusRepository = productItemStatusRepository;
+            _mapper = mapper;
+            var _configProduct = new MapperConfiguration(cfg => cfg.CreateMap<Product, ProductResponse>().ReverseMap());
+
+            _productMapper = new Mapper(_configProduct);
         }
 
         public async Task<List<ProductResponse>> GetProductsListAsync(ProductCriteria request)

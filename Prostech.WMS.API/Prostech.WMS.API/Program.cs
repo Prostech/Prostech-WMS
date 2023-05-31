@@ -90,6 +90,9 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var key = Encoding.ASCII.GetBytes(jwtSettings.GetValue<string>("Secret"));
 
+//Auto Mapper
+builder.Services.AddAutoMapper(typeof(Program));
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
