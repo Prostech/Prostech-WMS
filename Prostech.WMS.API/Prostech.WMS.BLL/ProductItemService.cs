@@ -22,7 +22,7 @@ namespace Prostech.WMS.BLL
             _productItemRepository = productItemRepository;
         }
 
-        public async Task<List<ProductItemResponse>> GetProductItemsListAsync(ProductItemRequest request)
+        public async Task<List<ProductItemResponse>> GetProductItemsListAsync(ProductItemCriteria request)
         {
             List<ProductItem> productItems = new List<ProductItem>();
 

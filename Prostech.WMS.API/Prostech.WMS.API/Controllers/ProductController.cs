@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Prostech.WMS.BLL.Helpers.ExceptionStatusCode;
 using Prostech.WMS.BLL.Helpers.ValueChecker;
 using Prostech.WMS.BLL.Interface;
 using Prostech.WMS.DAL.DTOs.ProductDTO;
@@ -20,7 +22,7 @@ namespace Prostech.WMS.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetProductsAsync([FromQuery] ProductRequest request)
+        public async Task<IActionResult> GetProductsAsync([FromQuery] ProductCriteria request)
         {
             List<ProductResponse> products = new List<ProductResponse>();
             try
@@ -37,7 +39,7 @@ namespace Prostech.WMS.API.Controllers
             }
             catch (Exception ex)
             {
-                HttpContext.Response.StatusCode = 500;
+                ExceptionStatusCodeHelper.SetStatusCode(HttpContext, ex);
                 return new JsonResult(ex.Message);
             }
         }
@@ -60,12 +62,7 @@ namespace Prostech.WMS.API.Controllers
             }
             catch (Exception ex)
             {
-                if(ex is System.NullReferenceException)
-                {
-                    HttpContext.Response.StatusCode = 500;
-                    return new JsonResult("There is no product by the guid");
-                }
-                HttpContext.Response.StatusCode = 500;
+                ExceptionStatusCodeHelper.SetStatusCode(HttpContext, ex);
                 return new JsonResult(ex.Message);
             }
         }
@@ -79,7 +76,7 @@ namespace Prostech.WMS.API.Controllers
             }
             catch (Exception ex)
             {
-                HttpContext.Response.StatusCode = 500;
+                ExceptionStatusCodeHelper.SetStatusCode(HttpContext, ex);
                 return new JsonResult(ex.Message);
             }
         }
@@ -89,7 +86,7 @@ namespace Prostech.WMS.API.Controllers
         {
             if (ValueCheckerHelper.IsNull(request.GUID) || ValueCheckerHelper.IsNullOrZero(request.ModifiedBy))
             {
-                throw new Exception("Please input GUID and ModifiedBy");
+                throw new IOException("Please input GUID and ModifiedBy");
             }
             try
             {
@@ -97,7 +94,7 @@ namespace Prostech.WMS.API.Controllers
             }
             catch (Exception ex)
             {
-                HttpContext.Response.StatusCode = 500;
+                ExceptionStatusCodeHelper.SetStatusCode(HttpContext, ex);
                 return new JsonResult(ex.Message);
             }
         }
@@ -111,7 +108,7 @@ namespace Prostech.WMS.API.Controllers
             }
             catch (Exception ex)
             {
-                HttpContext.Response.StatusCode = 500;
+                ExceptionStatusCodeHelper.SetStatusCode(HttpContext, ex);
                 return new JsonResult(ex.Message);
             }
         }

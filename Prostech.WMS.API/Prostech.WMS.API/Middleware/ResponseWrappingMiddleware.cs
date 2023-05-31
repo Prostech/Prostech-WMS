@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using Prostech.WMS.BLL.Helpers.Wrapper;
 using System.Threading.Tasks;
 
-namespace Prostech.WMS.API.Middlewares
+namespace Prostech.WMS.API.Middleware
 {
     // You may need to install the Microsoft.AspNetCore.Http.Abstractions package into your project
     public class ResponseWrappingMiddleware
@@ -56,15 +56,6 @@ namespace Prostech.WMS.API.Middlewares
 
             // returing response to caller
             await context.Response.WriteAsync(JsonConvert.SerializeObject(response));
-        }
-    }
-
-    // Extension method used to add the middleware to the HTTP request pipeline.
-    public static class MiddlewareExtensions
-    {
-        public static IApplicationBuilder ResponseWrappingMiddleware(this IApplicationBuilder builder)
-        {
-            return builder.UseMiddleware<ResponseWrappingMiddleware>();
         }
     }
 }

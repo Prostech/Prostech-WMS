@@ -1,6 +1,10 @@
+using LinqToDB.Common;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
-using Prostech.WMS.API.Middlewares;
+using Microsoft.IdentityModel.Tokens;
+using Prostech.WMS.API.Controllers;
+using Prostech.WMS.API.Middleware;
 using Prostech.WMS.API.Models;
 using Prostech.WMS.BLL;
 using Prostech.WMS.BLL.Interface;
@@ -10,6 +14,7 @@ using Prostech.WMS.DAL.Models;
 using Prostech.WMS.DAL.Repositories.WMS;
 using Prostech.WMS.DAL.Repositories.WMS.Base;
 using Prostech.WMS.DAL.Repositories.WMS.Interface;
+using System.Text;
 
 var configuration = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
@@ -65,6 +70,8 @@ new WMSContext(new DbContextOptionsBuilder<WMSContext>().UseNpgsql(wmsDbConnStr)
 //Service
 builder.Services.AddScoped<IProductItemService, ProductItemService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserAccountService, UserAccountService>();
 
 //Repository
 builder.Services.AddScoped(typeof(IWMSGenericRepository<>), typeof(WMSGenericRepository<>));
@@ -75,8 +82,31 @@ builder.Services.AddScoped<IActionHistoryRepository, ActionHistoryRepository>();
 builder.Services.AddScoped<IBrandrepository, BrandRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IProductItemStatusRepository, ProductItemStatusRepository>();
+builder.Services.AddScoped<IUserAccountRepository, UserAccountRepository>();
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
+// JWT Authentication
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+var key = Encoding.ASCII.GetBytes(jwtSettings.GetValue<string>("Secret"));
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false; // Only use in development environment
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = false, // Set to true if you have a specific issuer
+        ValidateAudience = false, // Set to true if you have a specific audience
+    };
+});
 
 var app = builder.Build();
 
@@ -93,7 +123,11 @@ app.UseCors("CorsPolicy");
 
 app.UseAuthorization();
 
+app.UseAuthentication();
+
 app.UseMiddleware<ResponseWrappingMiddleware>();
+
+app.UseMiddleware<SecurityMiddleware>();
 
 app.MapControllers();
 
