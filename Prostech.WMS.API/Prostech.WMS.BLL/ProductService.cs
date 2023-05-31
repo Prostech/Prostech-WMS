@@ -21,25 +21,22 @@ namespace Prostech.WMS.BLL
         private readonly IActionHistoryRepository _actionHistoryRepository;
         private readonly IBrandrepository _brandRepository;
         private readonly ICategoryRepository _categoryRepository;
-        private readonly IProductItemRepository _productItemRepository;
         private readonly IProductItemStatusRepository _productItemStatusRepository;
 
         public ProductService(IProductRepository productRepository,
             IActionHistoryRepository actionHistoryRepository,
             IBrandrepository brandrepository,
             ICategoryRepository categoryRepository,
-            IProductItemRepository productItemRepository,
             IProductItemStatusRepository productItemStatusRepository)
         {
             _productRepository = productRepository;
             _actionHistoryRepository = actionHistoryRepository;
             _brandRepository = brandrepository;
             _categoryRepository = categoryRepository;
-            _productItemRepository = productItemRepository;
             _productItemStatusRepository = productItemStatusRepository;
         }
 
-        public async Task<List<ProductResponse>> GetProductsListAsync(ProductRequest request)
+        public async Task<List<ProductResponse>> GetProductsListAsync(ProductCriteria request)
         {
             List<Product> products = new List<Product>();
 
