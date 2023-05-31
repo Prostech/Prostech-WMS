@@ -25,7 +25,7 @@ namespace Prostech.WMS.DAL.Repositories.WMS
             try
             {
                 return _wmsRepository.Table
-                     .Where(_ => _.CategoryId == categoryId)
+                     .Where(_ => _.CategoryId == categoryId && _.IsActive == true)
                      .FirstOrDefault();
             }
             catch

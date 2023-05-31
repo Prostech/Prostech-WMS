@@ -22,14 +22,14 @@ namespace Prostech.WMS.DAL.Repositories.WMS
         public async Task<UserAccount> GetUserAccountByUsernameAndPassword(string username, string password)
         {
             return await _wmsRepository.Table
-                                 .Where(_ => _.UserName == username && _.Password == password)
+                                 .Where(_ => _.UserName == username && _.Password == password && _.IsActive == true)
                                  .FirstOrDefaultAsync();
         }
 
         public async Task<UserAccount> GetUserAccountByGUID(Guid guid)
         {
             return await _wmsRepository.Table
-                                 .Where(_ => _.GUID == guid)
+                                 .Where(_ => _.GUID == guid && _.IsActive == true)
                                  .FirstOrDefaultAsync();
         }
     }
