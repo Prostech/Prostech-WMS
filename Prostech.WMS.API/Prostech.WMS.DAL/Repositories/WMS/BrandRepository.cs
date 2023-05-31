@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Prostech.WMS.DAL.Repositories.WMS
 {
-    public class BrandRepository : IBrandrepository
+    public class BrandRepository : IBrandRepository
     {
         private IWMSGenericRepository<Brand> _wmsRepository;
 
@@ -20,12 +20,18 @@ namespace Prostech.WMS.DAL.Repositories.WMS
             _wmsRepository = wmsRepository;
         }
 
-        public string GetBrandNameByIdAsync(int brandId)
+        public Brand GetBrandById(int brandId)
         {
-            return _wmsRepository.Table
-                                       .Where(_ => _.BrandId == brandId)
-                                       .Select(_ => _.BrandName)
-                                       .FirstOrDefault();
+            try
+            {
+                return _wmsRepository.Table
+                     .Where(_ => _.BrandId == brandId)
+                     .FirstOrDefault();
+            }
+            catch
+            {
+                throw new Exception("Brand does not exists");
+            }
         }
     }
 }

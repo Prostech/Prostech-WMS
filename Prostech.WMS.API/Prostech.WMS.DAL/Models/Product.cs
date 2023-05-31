@@ -9,10 +9,6 @@ namespace Prostech.WMS.DAL.Models
 {
     public class Product : BaseEntity
     {
-        public Product()
-        { 
-            ProductItems = new HashSet<ProductItem>();
-        }
         public int ProductId { get; set; }
         public string ProductName { get; set; }
         public string Description { get; set; }

@@ -22,6 +22,6 @@ namespace Prostech.WMS.DAL.Models
         public DateTime? LatestOutboundTime { get; set; }
         public int ProductItemStatusId { get; set; }
         public ProductItemStatus ProductItemStatus { get; set; }
-        public virtual ICollection<ActionHistoryDetail> ActionHistoryDetails { get; }
+        public virtual ICollection<ActionHistoryDetail> ActionHistoryDetails { get; set; }
     }
 }

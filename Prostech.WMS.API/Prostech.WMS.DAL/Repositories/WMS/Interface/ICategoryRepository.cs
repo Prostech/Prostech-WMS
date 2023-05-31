@@ -9,6 +9,6 @@ namespace Prostech.WMS.DAL.Repositories.WMS.Interface
 {
     public interface ICategoryRepository
     {
-        string GetCategoryNameByIdAsync(int categoryId);
+        Category GetcategoryById(int categoryId);
     }
 }

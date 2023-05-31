@@ -20,12 +20,18 @@ namespace Prostech.WMS.DAL.Repositories.WMS
             _wmsRepository = wmsRepository;
         }
 
-        public string GetCategoryNameByIdAsync(int categoryId)
+        public Category GetcategoryById(int categoryId)
         {
-            return _wmsRepository.Table
-                                 .Where(_ => _.CategoryId == categoryId)
-                                 .Select(_ => _.CategoryName)
-                                 .FirstOrDefault();
+            try
+            {
+                return _wmsRepository.Table
+                     .Where(_ => _.CategoryId == categoryId)
+                     .FirstOrDefault();
+            }
+            catch
+            {
+                throw new NullReferenceException("Category does not exists");
+            }
         }
     }
 }
