@@ -20,15 +20,14 @@ namespace Prostech.WMS.BLL
     {
         private readonly IProductRepository _productRepository;
         private readonly IActionHistoryRepository _actionHistoryRepository;
-        private readonly IBrandrepository _brandRepository;
+        private readonly IBrandRepository _brandRepository;
         private readonly ICategoryRepository _categoryRepository;
         private readonly IProductItemStatusRepository _productItemStatusRepository;
         private readonly IMapper _mapper;
-        private Mapper _productMapper;
 
         public ProductService(IProductRepository productRepository,
             IActionHistoryRepository actionHistoryRepository,
-            IBrandrepository brandrepository,
+            IBrandRepository brandrepository,
             ICategoryRepository categoryRepository,
             IProductItemStatusRepository productItemStatusRepository,
             IMapper mapper)
@@ -39,9 +38,6 @@ namespace Prostech.WMS.BLL
             _categoryRepository = categoryRepository;
             _productItemStatusRepository = productItemStatusRepository;
             _mapper = mapper;
-            var _configProduct = new MapperConfiguration(cfg => cfg.CreateMap<Product, ProductResponse>().ReverseMap());
-
-            _productMapper = new Mapper(_configProduct);
         }
 
         public async Task<List<ProductResponse>> GetProductsListAsync(ProductCriteria request)
@@ -52,50 +48,10 @@ namespace Prostech.WMS.BLL
 
             ServiceConstants.SetTotalRecords(products.Count);
 
-            List<ProductResponse> result = products.Select(_ => new ProductResponse
-            {
-                ProductId = _.ProductId,
-                ProductName = _.ProductName,
-                BrandId = _.BrandId,
-                BrandName = _.Brand.BrandName,
-                CategoryId = _.CategoryId,
-                CategoryName = _.Category.CategoryName,
-                Description = _.Description,
-                CreatedBy = _.CreatedBy,
-                CreatedTime = _.CreatedTime,
-                ModifiedBy = _.ModifiedBy,
-                ModifiedTime = _.ModifiedTime,
-                IsActive = _.IsActive,
-                GUID = _.GUID,
-                ProductItemStatusId = _.ProductItems.Select(_ => _.ProductItemStatusId).FirstOrDefault(),
-                ProductItemStatusName = _.ProductItems.Select(_ => _.ProductItemStatus.ProductItemStatusName).FirstOrDefault(),
-                Price = _.ProductItems.Select(_ => _.Price).FirstOrDefault(),
-                ActionHistoryId = _.ProductItems.Select(_ => _.ActionHistoryDetails.Select(_ => _.ActionHistoryId).FirstOrDefault()).FirstOrDefault(),
-                ProductItems = _.ProductItems.Select(_ => new ProductItemResponse
-                {
-                    SKU = _.SKU,
-                    ProductId = _.ProductId,
-                    ProductName = _.Product.ProductName,
-                    BrandId = _.Product.BrandId,
-                    BrandName = _.Product.Brand.BrandName,
-                    CategoryId = _.Product.CategoryId,
-                    CategoryName = _.Product.Category.CategoryName,
-                    IsStock = _.IsStock,
-                    CreatedTime = _.CreatedTime,
-                    CreatedBy = _.CreatedBy,
-                    ModifiedTime = _.ModifiedTime,
-                    ModifiedBy = _.ModifiedBy,
-                    LatestInboundTime = _.LatestInboundTime,
-                    LatestOutboundTime = _.LatestOutboundTime
-                })
-                .Where(_ => _.IsStock == true)
-                .OrderBy(_ => _.SKU)
-                .ToList(),
-                Quantity = _.ProductItems.Count(_ => _.IsStock),
-            })
-            .Skip((request.Page - 1) * request.PageSize)
-            .Take(request.PageSize)
-            .ToList();
+            products =  products.Skip((request.Page - 1) * request.PageSize)
+                                .Take(request.PageSize).ToList();
+
+            List<ProductResponse> result = _mapper.Map<List<ProductResponse>>(products);
 
             return result;
         }
@@ -112,58 +68,32 @@ namespace Prostech.WMS.BLL
             }
 
             ServiceConstants.SetTotalRecords(1);
+            ProductResponse result = _mapper.Map<Product, ProductResponse>(product);
 
-            ProductResponse result = new ProductResponse
-            {
-                ProductId = product.ProductId,
-                ProductName = product.ProductName,
-                BrandId = product.BrandId,
-                BrandName = product.Brand.BrandName,
-                CategoryId = product.CategoryId,
-                CategoryName = product.Category.CategoryName,
-                Description = product.Description,
-                CreatedBy = product.CreatedBy,
-                CreatedTime = product.CreatedTime,
-                ModifiedBy = product.ModifiedBy,
-                ModifiedTime = product.ModifiedTime,
-                IsActive = product.IsActive,
-                GUID = product.GUID,
-                ProductItemStatusId = product.ProductItems.Select(_ => _.ProductItemStatusId).FirstOrDefault(),
-                ProductItemStatusName = product.ProductItems.Select(_ => _.ProductItemStatus.ProductItemStatusName).FirstOrDefault(),
-                Price = product.ProductItems.Select(_ => _.Price).FirstOrDefault(),
-                ActionHistoryId = product.ProductItems.Select(_ => _.ActionHistoryDetails.Select(_ => _.ActionHistoryId).FirstOrDefault()).FirstOrDefault(),
-                ProductItems = product.ProductItems.Select(_ => new ProductItemResponse {
-                    SKU = _.SKU,
-                    ProductId = _.ProductId,
-                    ProductName = _.Product.ProductName,
-                    BrandId = _.Product.BrandId,
-                    BrandName = _.Product.Brand.BrandName,
-                    CategoryId = _.Product.CategoryId,
-                    CategoryName = _.Product.Category.CategoryName,
-                    IsStock = _.IsStock,
-                    CreatedTime = _.CreatedTime,
-                    CreatedBy = _.CreatedBy,
-                    ModifiedTime = _.ModifiedTime,
-                    ModifiedBy = _.ModifiedBy,
-                    LatestInboundTime = _.LatestInboundTime,
-                    LatestOutboundTime = _.LatestOutboundTime
-                })
-                .Where(_ => _.IsStock == true)
-                .OrderBy(_ => _.SKU)
-                .ToList(),
-                Quantity = product.ProductItems.Count(_ => _.IsStock)
-            };
             return result;
         }
 
         public async Task<ProductResponse> AddProductAsync(ProductPost request)
         {
+
+            ActionHistory actionHistory = new ActionHistory
+            {
+                ActionTypeId = (int)ActionTypeEnum.Inbound,
+                IsActive = true,
+                CreatedTime = DateTime.UtcNow,
+                CreatedBy = request.CreatedBy,
+            };
+
+            ActionHistory actionHistoryAddResult = await _actionHistoryRepository.AddActionHistoryAsync(actionHistory);
+
             Product product = new Product
             {
                 ProductName = request.ProductName,
                 Description = request.Description,
                 BrandId = request.BrandId,
+                Brand = _brandRepository.GetBrandById(request.BrandId),
                 CategoryId = request.CategoryId,
+                Category = _categoryRepository.GetcategoryById(request.CategoryId),
                 IsActive = true,
                 CreatedBy = request.CreatedBy,
                 CreatedTime = DateTime.UtcNow,
@@ -176,67 +106,24 @@ namespace Prostech.WMS.BLL
                         CreatedTime = DateTime.UtcNow,
                         ProductItemStatusId = request.ProductItemStatusId,
                         LatestInboundTime = DateTime.UtcNow,
+                        ProductItemStatus = _productItemStatusRepository.GetProductItemStatusById(request.ProductItemStatusId),
+                        ActionHistoryDetails = new List<ActionHistoryDetail>
+                        {
+                            new ActionHistoryDetail
+                            {
+                                ActionHistoryId = actionHistoryAddResult.ActionHistoryId,
+                                IsActive = true,
+                                CreatedTime = DateTime.UtcNow,
+                                CreatedBy = request.CreatedBy
+                            }
+                        }
                     })
                     .ToList(),
             };
             
             Product productAddResult = await _productRepository.CreateProductAsync(product);
 
-            ActionHistory actionHistory = new ActionHistory
-            {
-                ActionTypeId = (int)ActionTypeEnum.Inbound,
-                IsActive = true,
-                CreatedTime = DateTime.UtcNow,
-                CreatedBy = request.CreatedBy,
-                ActionHistoryDetails = product.ProductItems.Select(_ => new ActionHistoryDetail
-                {
-                    SKU = _.SKU,
-                    IsActive = true,
-                    CreatedTime = DateTime.UtcNow,
-                    CreatedBy = 1
-                })
-                .ToList()
-            };
-
-            ActionHistory actionHistoryAddResult = await _actionHistoryRepository.AddActionHistoryAsync(actionHistory);
-
-            ProductResponse result = new ProductResponse
-            {
-                ProductId = productAddResult.ProductId,
-                ProductName = productAddResult.ProductName,
-                BrandId = productAddResult.BrandId,
-                BrandName = _brandRepository.GetBrandNameByIdAsync(productAddResult.BrandId),
-                CategoryId = productAddResult.CategoryId,
-                Description = _categoryRepository.GetCategoryNameByIdAsync(productAddResult.CategoryId),
-                Quantity = productAddResult.ProductItems.Count,
-                GUID = productAddResult.GUID,
-                ActionHistoryId = actionHistoryAddResult.ActionHistoryId,
-                IsActive = productAddResult.IsActive,
-                CreatedBy = productAddResult.CreatedBy,
-                CreatedTime = productAddResult.CreatedTime,
-                ModifiedBy = productAddResult.ModifiedBy,
-                ModifiedTime = productAddResult.ModifiedTime,
-                ProductItemStatusId = productAddResult.ProductItems.Select(_ => _.ProductItemStatusId).FirstOrDefault(),
-                ProductItemStatusName = _productItemStatusRepository.GetProductItemStatusById(productAddResult.ProductItems.Select(_ => _.ProductItemStatusId).FirstOrDefault()),
-                Price = productAddResult.ProductItems.Select(_ => _.Price).FirstOrDefault(),
-                ProductItems = productAddResult.ProductItems.Select(_ => new ProductItemResponse { 
-                    SKU = _.SKU,
-                    ProductId = _.ProductId,
-                    ProductName = productAddResult.ProductName,
-                    BrandId = productAddResult.BrandId,
-                    BrandName = _brandRepository.GetBrandNameByIdAsync(productAddResult.BrandId),
-                    CategoryId = productAddResult.CategoryId,
-                    CategoryName = _categoryRepository.GetCategoryNameByIdAsync(productAddResult.CategoryId),
-                    IsStock = _.IsStock,
-                    CreatedTime = _.CreatedTime,
-                    CreatedBy = _.CreatedBy,
-                    ModifiedTime = _.ModifiedTime,
-                    ModifiedBy = _.ModifiedBy,
-                    LatestInboundTime = _.LatestInboundTime,
-                    LatestOutboundTime = _.LatestOutboundTime,
-                })
-                .ToList()
-            };
+            ProductResponse result = _mapper.Map<Product, ProductResponse>(productAddResult);
 
             return result;
         }
@@ -267,43 +154,7 @@ namespace Prostech.WMS.BLL
 
             await _productRepository.UpdateProductAsync(existingProduct);
 
-            ProductResponse result = new ProductResponse
-            {
-                ProductId = existingProduct.ProductId,
-                ProductName = existingProduct.ProductName,
-                BrandId = existingProduct.BrandId,
-                BrandName = _brandRepository.GetBrandNameByIdAsync(existingProduct.BrandId),
-                CategoryId = existingProduct.CategoryId,
-                Description = _categoryRepository.GetCategoryNameByIdAsync(existingProduct.CategoryId),
-                Quantity = existingProduct.ProductItems.Count,
-                GUID = existingProduct.GUID,
-                IsActive = existingProduct.IsActive,
-                CreatedBy = existingProduct.CreatedBy,
-                CreatedTime = existingProduct.CreatedTime,
-                ModifiedBy = existingProduct.ModifiedBy,
-                ModifiedTime = existingProduct.ModifiedTime,
-                ProductItemStatusId = existingProduct.ProductItems.Select(_ => _.ProductItemStatusId).FirstOrDefault(),
-                ProductItemStatusName = _productItemStatusRepository.GetProductItemStatusById(existingProduct.ProductItems.Select(_ => _.ProductItemStatusId).FirstOrDefault()),
-                Price = existingProduct.ProductItems.Select(_ => _.Price).FirstOrDefault(),
-                ProductItems = existingProduct.ProductItems.Select(_ => new ProductItemResponse
-                {
-                    SKU = _.SKU,
-                    ProductId = _.ProductId,
-                    ProductName = existingProduct.ProductName,
-                    BrandId = existingProduct.BrandId,
-                    BrandName = _brandRepository.GetBrandNameByIdAsync(existingProduct.BrandId),
-                    CategoryId = existingProduct.CategoryId,
-                    CategoryName = _categoryRepository.GetCategoryNameByIdAsync(existingProduct.CategoryId),
-                    IsStock = _.IsStock,
-                    CreatedTime = _.CreatedTime,
-                    CreatedBy = _.CreatedBy,
-                    ModifiedTime = _.ModifiedTime,
-                    ModifiedBy = _.ModifiedBy,
-                    LatestInboundTime = _.LatestInboundTime,
-                    LatestOutboundTime = _.LatestOutboundTime,
-                })
-                .ToList()
-            };
+            ProductResponse result = _mapper.Map<Product, ProductResponse>(existingProduct);
 
             return result;
         }
@@ -327,43 +178,7 @@ namespace Prostech.WMS.BLL
 
             await _productRepository.UpdateProductAsync(existingProduct);
 
-            ProductResponse result = new ProductResponse
-            {
-                ProductId = existingProduct.ProductId,
-                ProductName = existingProduct.ProductName,
-                BrandId = existingProduct.BrandId,
-                BrandName = _brandRepository.GetBrandNameByIdAsync(existingProduct.BrandId),
-                CategoryId = existingProduct.CategoryId,
-                Description = _categoryRepository.GetCategoryNameByIdAsync(existingProduct.CategoryId),
-                Quantity = existingProduct.ProductItems.Count,
-                GUID = existingProduct.GUID,
-                IsActive = existingProduct.IsActive,
-                CreatedBy = existingProduct.CreatedBy,
-                CreatedTime = existingProduct.CreatedTime,
-                ModifiedBy = existingProduct.ModifiedBy,
-                ModifiedTime = existingProduct.ModifiedTime,
-                ProductItemStatusId = existingProduct.ProductItems.Select(_ => _.ProductItemStatusId).FirstOrDefault(),
-                ProductItemStatusName = _productItemStatusRepository.GetProductItemStatusById(existingProduct.ProductItems.Select(_ => _.ProductItemStatusId).FirstOrDefault()),
-                Price = existingProduct.ProductItems.Select(_ => _.Price).FirstOrDefault(),
-                ProductItems = existingProduct.ProductItems.Select(_ => new ProductItemResponse
-                {
-                    SKU = _.SKU,
-                    ProductId = _.ProductId,
-                    ProductName = existingProduct.ProductName,
-                    BrandId = existingProduct.BrandId,
-                    BrandName = _brandRepository.GetBrandNameByIdAsync(existingProduct.BrandId),
-                    CategoryId = existingProduct.CategoryId,
-                    CategoryName = _categoryRepository.GetCategoryNameByIdAsync(existingProduct.CategoryId),
-                    IsStock = _.IsStock,
-                    CreatedTime = _.CreatedTime,
-                    CreatedBy = _.CreatedBy,
-                    ModifiedTime = _.ModifiedTime,
-                    ModifiedBy = _.ModifiedBy,
-                    LatestInboundTime = _.LatestInboundTime,
-                    LatestOutboundTime = _.LatestOutboundTime,
-                })
-                .ToList()
-            };
+            ProductResponse result = _mapper.Map<Product, ProductResponse>(existingProduct);
 
             return result;
         }

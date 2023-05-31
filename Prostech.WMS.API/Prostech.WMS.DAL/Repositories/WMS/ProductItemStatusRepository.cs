@@ -20,11 +20,10 @@ namespace Prostech.WMS.DAL.Repositories.WMS
             _wmsRepository = wmsRepository;
         }
 
-        public string GetProductItemStatusById(int productItemStatusId)
+        public ProductItemStatus GetProductItemStatusById(int productItemStatusId)
         {
             return _wmsRepository.Table
                                  .Where(_ => _.ProductItemStatusId == productItemStatusId)
-                                 .Select(_ => _.ProductItemStatusName)
                                  .FirstOrDefault();
         }
     }

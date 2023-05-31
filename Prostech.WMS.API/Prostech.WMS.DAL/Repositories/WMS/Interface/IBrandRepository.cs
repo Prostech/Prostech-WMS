@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace Prostech.WMS.DAL.Repositories.WMS.Interface
 {
-    public interface IBrandrepository
+    public interface IBrandRepository
     {
-        string GetBrandNameByIdAsync(int brandId);
+        Brand GetBrandById(int brandId);
     }
 }
