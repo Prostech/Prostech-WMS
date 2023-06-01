@@ -1,4 +1,5 @@
-﻿using Prostech.WMS.DAL.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Prostech.WMS.DAL.Models;
 using Prostech.WMS.DAL.Repositories.WMS.Base;
 using Prostech.WMS.DAL.Repositories.WMS.Interface;
 using System;
@@ -21,6 +22,32 @@ namespace Prostech.WMS.DAL.Repositories.WMS
         public async Task<ActionHistory> AddActionHistoryAsync(ActionHistory actionHistory)
         {
             return await _wmsRepository.InsertAsync(actionHistory);
+        }
+
+        public async Task<List<ActionHistory>> GetActionHistoriesListAsync()
+        {
+            try
+            {
+                return await _wmsRepository.Table
+                    .Include(_ => _.ActionType)
+                    .Include(_ => _.ActionHistoryDetails)
+                    .ThenInclude(_ => _.ProductItem)
+                    .ThenInclude(_ => _.Product)
+                    .ThenInclude(_ => _.Brand)
+                    .Include(_ => _.ActionHistoryDetails)
+                    .ThenInclude(_ => _.ProductItem)
+                    .ThenInclude(_ => _.Product)
+                    .ThenInclude(_ => _.Category)
+                    .Include(_ => _.ActionHistoryDetails)
+                    .ThenInclude(_ => _.ProductItem)
+                    .ThenInclude(_ => _.ProductItemStatus)
+                    .Where(_ => _.IsActive == true)
+                    .ToListAsync();
+            }
+            catch
+            {
+                throw new NullReferenceException("No action history found");
+            }
         }
     }
 }

@@ -10,5 +10,6 @@ namespace Prostech.WMS.DAL.Repositories.WMS.Interface
     public interface IActionHistoryRepository
     {
         Task<ActionHistory> AddActionHistoryAsync (ActionHistory actionHistory);
+        Task<List<ActionHistory>> GetActionHistoriesListAsync();
     }
 }

@@ -8,14 +8,67 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Prostech.WMS.DAL.DTOs.ProductItemDTO;
 using Prostech.WMS.DAL.Repositories.WMS.Interface;
+using Prostech.WMS.DAL.DTOs.ActionHistoryDTO;
+using LinqToDB.Common;
+using AutoMapper.QueryableExtensions;
+using Microsoft.Extensions.Configuration;
+using IConfigurationProvider = AutoMapper.IConfigurationProvider;
 
 namespace Prostech.WMS.BLL.AutoMapper
 {
     public class AutoMapperProfile : Profile
     {
-        private readonly IBrandRepository _brandRepository;
-        public AutoMapperProfile() 
+        public AutoMapperProfile()
         {
+            CreateMap<ActionHistory, ActionHistoryResponse>()
+                .ForMember(dest => dest.ActionTypeName, opt => opt.MapFrom(src => src.ActionType.ActionName))
+                .ForMember(dest => dest.Products, opt => opt.MapFrom(src => src.ActionHistoryDetails
+                    .GroupBy(d => d.ProductItem.Product.ProductId) // Grouping by ProductId
+                    .Select(group => new ProductResponse
+                    {
+                        ProductId = group.Key,
+                        ProductName = group.First().ProductItem.Product.ProductName,
+                        BrandId = group.First().ProductItem.Product.BrandId,
+                        BrandName = group.First().ProductItem.Product.Brand.BrandName,
+                        CategoryId = group.First().ProductItem.Product.CategoryId,
+                        CategoryName = group.First().ProductItem.Product.Category.CategoryName,
+                        Description = group.First().ProductItem.Product.Description,
+                        Quantity = group.First().ProductItem.Product.ProductItems.Count(),
+                        GUID = group.First().ProductItem.Product.GUID,
+                        ActionHistoryId = src.ActionHistoryId,
+                        ProductItemStatusId = group.First().ProductItem.Product.ProductItems.FirstOrDefault().ProductItemStatusId,
+                        ProductItemStatusName = group.First().ProductItem.Product.ProductItems.FirstOrDefault().ProductItemStatus.ProductItemStatusName,
+                        Price = group.First().ProductItem.Product.ProductItems.FirstOrDefault().Price,
+                        ProductItems = group.First().ProductItem.Product.ProductItems
+                            .Select(item => new ProductItemResponse
+                            {
+                                SKU = item.SKU,
+                                ProductId = item.ProductId,
+                                ProductName = item.Product.ProductName,
+                                BrandId = item.Product.BrandId,
+                                BrandName = item.Product.Brand.BrandName,
+                                CategoryId = item.Product.CategoryId,
+                                CategoryName = item.Product.Category.CategoryName,
+                                IsStock = item.IsStock,
+                                CreatedTime = item.CreatedTime,
+                                CreatedBy = item.CreatedBy,
+                                ModifiedTime = item.ModifiedTime,
+                                ModifiedBy = item.ModifiedBy,
+                                LatestInboundTime = item.LatestInboundTime,
+                                LatestOutboundTime = item.LatestOutboundTime,
+                                GUID = item.GUID,
+                            })
+                            .OrderBy(item => item.SKU)
+                            .ToList(),
+                        IsActive = group.First().ProductItem.Product.IsActive,
+                        CreatedTime = group.First().ProductItem.Product.CreatedTime,
+                        CreatedBy = group.First().ProductItem.Product.CreatedBy,
+                        ModifiedTime = group.First().ProductItem.Product.ModifiedTime,
+                        ModifiedBy = group.First().ProductItem.Product.ModifiedBy
+                    }).ToList()
+                ));
+
+
             CreateMap<Product, ProductResponse>()
                 .ForMember(dest => dest.BrandName, opt => opt.MapFrom(src => src.Brand.BrandName))
                 .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.CategoryName))
