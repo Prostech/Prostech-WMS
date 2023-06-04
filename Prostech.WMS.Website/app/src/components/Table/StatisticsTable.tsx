@@ -92,7 +92,7 @@ const style = {
   p: 4,
 };
 
-export default function ProductListTable() {
+export default function StatisticsTable() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -121,29 +121,32 @@ export default function ProductListTable() {
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
+              <TableCell
+                align="center"
+                colSpan={5}
+                style={{
+                  backgroundColor: "#ccc6c6",
+                  fontWeight: "bold",
+                  fontSize: "large",
+                }}
+              >
+                Action History
+              </TableCell>
+            </TableRow>
+            <TableRow>
               {columns.map((column) => (
                 <TableCell
                   key={column.id}
                   align={column.align}
                   style={{
                     minWidth: column.minWidth,
-                    backgroundColor: "#ccc6c6",
+                    backgroundColor: "#dfdada",
                     fontWeight: "bold",
                   }}
                 >
                   {column.label}
                 </TableCell>
               ))}
-              <TableCell
-                align="center"
-                style={{
-                  minWidth: 170,
-                  backgroundColor: "#ccc6c6",
-                  fontWeight: "bold",
-                }}
-              >
-                Action
-              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -162,27 +165,6 @@ export default function ProductListTable() {
                         </TableCell>
                       );
                     })}
-                    <TableCell align="right">
-                      <div className="inline-flex">
-                        <button
-                          className="px-4 py-2 font-bold text-gray-800 bg-blue-200 rounded-l hover:bg-blue-400"
-                          onClick={() => handleImportClick(row)}
-                        >
-                          Import
-                        </button>
-                        <button
-                          disabled={row.population === 0}
-                          className={`px-4 py-2 font-bold text-gray-800 ${
-                            row.population === 0
-                              ? "bg-gray-200 cursor-not-allowed"
-                              : "bg-green-200 hover:bg-green-400"
-                          } rounded-r`}
-                          onClick={() => handleExportClick(row)}
-                        >
-                          Export
-                        </button>
-                      </div>
-                    </TableCell>
                   </TableRow>
                 );
               })}

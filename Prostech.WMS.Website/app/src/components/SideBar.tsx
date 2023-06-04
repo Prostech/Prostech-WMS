@@ -69,7 +69,7 @@ const SideBar = () => {
       <Menu className={`${!menuCollapse && "flex justify-center"}`}>
         <Link href="/products">
           <MenuItem
-            className={`mt-[20px] hover:bg-white hover:text-black hover:px-[5px]  ${
+            className={`mt-[20px] hover:bg-white hover:text-black hover:px-[5px] text-white  ${
               !menuCollapse && "rounded-[10px] hover:rounded-[10px]"
             } ${pathname === "/products" && "menu_item_active"}`}
             icon={
@@ -99,7 +99,7 @@ const SideBar = () => {
         </Link>
         <Link href="/statistics">
           <MenuItem
-            className={`mt-[20px] hover:bg-white hover:text-black hover:px-[5px]  ${
+            className={`mt-[20px] hover:bg-white hover:text-black hover:px-[5px] text-white ${
               !menuCollapse && "rounded-[10px] hover:rounded-[10px]"
             } ${pathname === "/statistics" && "menu_item_active"}`}
             icon={
@@ -122,7 +122,7 @@ const SideBar = () => {
               </svg>
             }
           >
-            <a>Statistics</a>
+            Statistics
           </MenuItem>
         </Link>
       </Menu>

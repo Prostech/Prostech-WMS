@@ -88,3 +88,5 @@
     overflow: hidden;
   }
 }
+
+@import "rsuite/dist/rsuite.css";
