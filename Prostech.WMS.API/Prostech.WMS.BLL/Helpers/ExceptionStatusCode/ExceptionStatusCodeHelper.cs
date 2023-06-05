@@ -19,6 +19,7 @@ namespace Prostech.WMS.BLL.Helpers.ExceptionStatusCode
                 case ArgumentException:
                 case InvalidOperationException:
                 case FormatException:
+                case BadHttpRequestException:
                     context.Response.StatusCode = 400; // Bad Request
                     break;
                 case UnauthorizedAccessException:

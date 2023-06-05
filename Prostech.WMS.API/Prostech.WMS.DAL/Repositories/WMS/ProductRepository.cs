@@ -31,6 +31,7 @@ namespace Prostech.WMS.DAL.Repositories.WMS
                 .ThenInclude(_ => _.ActionHistoryDetails)
                 .OrderBy(_ => _.ProductId)
                 .Where(_ => _.IsActive == true)
+                .OrderByDescending(_ => _.CreatedTime)
                 .ToListAsync();
         }
 
@@ -44,6 +45,7 @@ namespace Prostech.WMS.DAL.Repositories.WMS
                 .Include(_ => _.ProductItems)
                 .ThenInclude(_ => _.ActionHistoryDetails)
                 .Where(_ => _.GUID == guid && _.IsActive == true)
+                .OrderByDescending(_ => _.CreatedTime)
                 .FirstOrDefaultAsync();
         }
 

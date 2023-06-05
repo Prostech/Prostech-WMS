@@ -23,7 +23,7 @@ namespace Prostech.WMS.DAL.Repositories.WMS
         public ProductItemStatus GetProductItemStatusById(int productItemStatusId)
         {
             return _wmsRepository.Table
-                                 .Where(_ => _.ProductItemStatusId == productItemStatusId)
+                                 .Where(_ => _.ProductItemStatusId == productItemStatusId && _.IsActive == true)
                                  .FirstOrDefault();
         }
     }

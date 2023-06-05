@@ -34,7 +34,7 @@ namespace Prostech.WMS.DAL.Repositories.WMS
         public List<ProductItem> GetProductItemsByProductIdAsync(int productId)
         {
             return _wmsRepository.Table
-                .Where(_ => _.ProductId == productId)
+                .Where(_ => _.ProductId == productId && _.IsActive == true)
                 .ToList();
         }
     }

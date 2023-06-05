@@ -45,39 +45,45 @@ namespace Prostech.WMS.BLL
 
         public async Task<bool> ValidateToken(string token)
         {
-            if (ValueCheckerHelper.IsNullOrEmpty(token))
-                throw new NullReferenceException("Token is null");
-
-            IConfigurationSection jwtSettings = _configuration.GetSection("JwtSettings");
-
-            ClaimsPrincipal principal = JwtUtility.ValidateToken(token, jwtSettings);
-
-            if (ValueCheckerHelper.IsNull(principal) || !principal.Identity.IsAuthenticated)
-                throw new UnauthorizedAccessException("Token is invalid");
-
-            Claim expirationClaim = principal.Claims.FirstOrDefault(c => c.Type == "exp");
-
-            if (expirationClaim == null || !long.TryParse(expirationClaim.Value, out long expirationValue))
-                throw new UnauthorizedAccessException("Invalid expiration claim");
-
-            long currentTimestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-
-            if (currentTimestamp >= expirationValue)
-                throw new UnauthorizedAccessException("Token has expired");
-
-            Claim? guidClaim = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-            Claim? userRoleClaim = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
-            UserAccount userAccount = await _userAccountRepository.GetUserAccountByGUID(Guid.Parse(guidClaim.Value));
-
-            if (ValueCheckerHelper.IsNull(guidClaim) || ValueCheckerHelper.IsNull(userRoleClaim) ||
-                !string.Equals(userRoleClaim?.Value, "admin") ||
-                ValueCheckerHelper.IsNull(await _userAccountRepository.GetUserAccountByGUID(Guid.Parse(guidClaim.Value))))
+            try 
             {
-                throw new UnauthorizedAccessException("User not found");
+                if (ValueCheckerHelper.IsNullOrEmpty(token))
+                    throw new NullReferenceException("Token is null");
+
+                IConfigurationSection jwtSettings = _configuration.GetSection("JwtSettings");
+
+                ClaimsPrincipal principal = JwtUtility.ValidateToken(token, jwtSettings);
+
+                if (ValueCheckerHelper.IsNull(principal) || !principal.Identity.IsAuthenticated)
+                    throw new UnauthorizedAccessException("Token is invalid");
+
+                Claim expirationClaim = principal.Claims.FirstOrDefault(c => c.Type == "exp");
+
+                if (expirationClaim == null || !long.TryParse(expirationClaim.Value, out long expirationValue))
+                    throw new UnauthorizedAccessException("Invalid expiration claim");
+
+                long currentTimestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
+                if (currentTimestamp >= expirationValue)
+                    throw new UnauthorizedAccessException("Token has expired");
+
+                Claim? guidClaim = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+                Claim? userRoleClaim = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
+                UserAccount userAccount = await _userAccountRepository.GetUserAccountByGUID(Guid.Parse(guidClaim.Value));
+
+                if (ValueCheckerHelper.IsNull(guidClaim) || ValueCheckerHelper.IsNull(userRoleClaim) ||
+                    !string.Equals(userRoleClaim?.Value, "admin") ||
+                    ValueCheckerHelper.IsNull(await _userAccountRepository.GetUserAccountByGUID(Guid.Parse(guidClaim.Value))))
+                {
+                    throw new UnauthorizedAccessException("User not found");
+                }
+
+                return true;
             }
-
-
-            return true;
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
     }

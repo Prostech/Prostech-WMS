@@ -4,6 +4,7 @@ using Prostech.WMS.BLL.Helpers.ValueChecker;
 using Prostech.WMS.BLL.Helpers.Wrapper;
 using Prostech.WMS.BLL.Interface;
 using Prostech.WMS.DAL.DBContext;
+using Prostech.WMS.DAL.DTOs.ActionHistoryDTO;
 using Prostech.WMS.DAL.DTOs.ProductDTO;
 using Prostech.WMS.DAL.DTOs.ProductItemDTO;
 using Prostech.WMS.DAL.Models;
@@ -19,25 +20,25 @@ namespace Prostech.WMS.BLL
     public class ProductService : IProductService
     {
         private readonly IProductRepository _productRepository;
-        private readonly IActionHistoryRepository _actionHistoryRepository;
+        private readonly IActionHistoryService _actionHistoryService;
         private readonly IBrandRepository _brandRepository;
         private readonly ICategoryRepository _categoryRepository;
         private readonly IProductItemStatusRepository _productItemStatusRepository;
         private readonly IMapper _mapper;
 
         public ProductService(IProductRepository productRepository,
-            IActionHistoryRepository actionHistoryRepository,
+            IActionHistoryService actionHistoryService,
             IBrandRepository brandrepository,
             ICategoryRepository categoryRepository,
             IProductItemStatusRepository productItemStatusRepository,
             IMapper mapper)
         {
             _productRepository = productRepository;
-            _actionHistoryRepository = actionHistoryRepository;
             _brandRepository = brandrepository;
             _categoryRepository = categoryRepository;
             _productItemStatusRepository = productItemStatusRepository;
             _mapper = mapper;
+            _actionHistoryService = actionHistoryService;
         }
 
         public async Task<List<ProductResponse>> GetProductsListAsync(ProductCriteria request)
@@ -75,16 +76,7 @@ namespace Prostech.WMS.BLL
 
         public async Task<ProductResponse> AddProductAsync(ProductPost request)
         {
-
-            ActionHistory actionHistory = new ActionHistory
-            {
-                ActionTypeId = (int)ActionTypeEnum.Inbound,
-                IsActive = true,
-                CreatedTime = DateTime.UtcNow,
-                CreatedBy = request.CreatedBy,
-            };
-
-            ActionHistory actionHistoryAddResult = await _actionHistoryRepository.AddActionHistoryAsync(actionHistory);
+            ActionHistoryResponse actionHistoryAddResult = await _actionHistoryService.AddActionHistoryAsync(request.CreatedBy, (int)ActionTypeEnum.Inbound);
 
             Product product = new Product
             {

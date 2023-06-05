@@ -75,6 +75,7 @@ try
     builder.Services.AddScoped<IProductService, ProductService>();
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IUserAccountService, UserAccountService>();
+    builder.Services.AddScoped<IActionHistoryService, ActionHistoryService>();
 
     //Repository
     builder.Services.AddScoped(typeof(IWMSGenericRepository<>), typeof(WMSGenericRepository<>));
