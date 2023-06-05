@@ -11,5 +11,6 @@ namespace Prostech.WMS.DAL.Repositories.WMS.Interface
     {
         Task<ActionHistory> AddActionHistoryAsync (ActionHistory actionHistory);
         Task<List<ActionHistory>> GetActionHistoriesListAsync();
+        Task<List<ActionHistory>> GetActionHistoriesByProductGUIDAsync(Guid[] guids);
     }
 }

@@ -11,5 +11,7 @@ namespace Prostech.WMS.BLL.Interface
     public interface IActionHistoryService
     {
         Task<List<ActionHistoryResponse>> GetActionHistoriesListAsync(int page, int paageSize);
+        Task<ActionHistoryResponse> StockMovement(ActionHistoryPost actionHistoryPost);
+        Task<ActionHistoryResponse> AddActionHistoryAsync(int createdBy, int actionTypeId);
     }
 }

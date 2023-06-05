@@ -26,28 +26,42 @@ namespace Prostech.WMS.DAL.Repositories.WMS
 
         public async Task<List<ActionHistory>> GetActionHistoriesListAsync()
         {
-            try
-            {
-                return await _wmsRepository.Table
-                    .Include(_ => _.ActionType)
-                    .Include(_ => _.ActionHistoryDetails)
-                    .ThenInclude(_ => _.ProductItem)
-                    .ThenInclude(_ => _.Product)
-                    .ThenInclude(_ => _.Brand)
-                    .Include(_ => _.ActionHistoryDetails)
-                    .ThenInclude(_ => _.ProductItem)
-                    .ThenInclude(_ => _.Product)
-                    .ThenInclude(_ => _.Category)
-                    .Include(_ => _.ActionHistoryDetails)
-                    .ThenInclude(_ => _.ProductItem)
-                    .ThenInclude(_ => _.ProductItemStatus)
-                    .Where(_ => _.IsActive == true)
-                    .ToListAsync();
-            }
-            catch
-            {
-                throw new NullReferenceException("No action history found");
-            }
+            return await _wmsRepository.Table
+                .Include(_ => _.ActionType)
+                .Include(_ => _.ActionHistoryDetails)
+                .ThenInclude(_ => _.ProductItem)
+                .ThenInclude(_ => _.Product)
+                .ThenInclude(_ => _.Brand)
+                .Include(_ => _.ActionHistoryDetails)
+                .ThenInclude(_ => _.ProductItem)
+                .ThenInclude(_ => _.Product)
+                .ThenInclude(_ => _.Category)
+                .Include(_ => _.ActionHistoryDetails)
+                .ThenInclude(_ => _.ProductItem)
+                .ThenInclude(_ => _.ProductItemStatus)
+                .Where(_ => _.IsActive == true)
+                .OrderByDescending(_ => _.CreatedTime)
+                .ToListAsync();
+        }
+
+        public async Task<List<ActionHistory>> GetActionHistoriesByProductGUIDAsync(Guid[] guids)
+        {
+            return await _wmsRepository.Table
+                .Include(_ => _.ActionType)
+                .Include(_ => _.ActionHistoryDetails)
+                .ThenInclude(_ => _.ProductItem)
+                .ThenInclude(_ => _.Product)
+                .ThenInclude(_ => _.Brand)
+                .Include(_ => _.ActionHistoryDetails)
+                .ThenInclude(_ => _.ProductItem)
+                .ThenInclude(_ => _.Product)
+                .ThenInclude(_ => _.Category)
+                .Include(_ => _.ActionHistoryDetails)
+                .ThenInclude(_ => _.ProductItem)
+                .ThenInclude(_ => _.ProductItemStatus)
+                .Where(a => a.IsActive && a.ActionHistoryDetails.Any(d => guids.Contains(d.ProductItem.Product.GUID)))
+                .OrderByDescending(_ => _.CreatedTime)
+                .ToListAsync();
         }
     }
 }
