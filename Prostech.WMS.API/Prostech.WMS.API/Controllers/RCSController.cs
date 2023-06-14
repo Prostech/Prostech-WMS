@@ -27,13 +27,16 @@ namespace Prostech.WMS.API.Controllers
             string token = new string("");
             try
             {
-                _logger.LogInformation("Receive AGV event successfully || " + DateTime.UtcNow.ToString());
+                DateTime utcTime = DateTime.UtcNow;
+                TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+                DateTime cstTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, cstZone);
+                _logger.LogInformation("Receive AGV event successfully || " + cstTime.ToString());
                 _logger.LogDebug(_appSettings.DatabaseConnection.WMS);
                 return new JsonResult(
                         new
                         {
                             Id = 1,
-                            Message = "Receive AGV event successfully || " +DateTime.UtcNow.ToString(),
+                            Message = "Receive AGV event successfully || " + cstTime.ToString(),
                             DB = _appSettings.DatabaseConnection.WMS.ToString(),
                         });
             }
