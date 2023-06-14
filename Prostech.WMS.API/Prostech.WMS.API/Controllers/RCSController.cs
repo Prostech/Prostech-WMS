@@ -35,7 +35,7 @@ namespace Prostech.WMS.API.Controllers
                         new
                         {
                             Id = 1,
-                            Message = "Receive AGV event successfully || " + cstTime.ToString("dddd/MMMM/yyyy F"),
+                            Message = "Receive AGV event successfully || " + cstTime.ToString("dddd/MMMM/yyyy T HH:MM:ss:FF"),
                         });
             }
             catch (Exception ex)
