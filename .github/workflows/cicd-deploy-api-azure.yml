@@ -1,8 +1,8 @@
-name: Build and deploy .NET Core application to Web App ProstechWMSAPI20230614091453
+name: 'Build & Deploy to Azure'
+run-name: "#${{ github.run_number }} - ${{ github.ref_name }} - ${{ github.sha }}"
 on:
-  push:
-    branches:
-    - dev
+  workflow_dispatch:
+  
 env:
   AZURE_WEBAPP_NAME: ProstechWMSAPI20230614091453
   AZURE_WEBAPP_PACKAGE_PATH: .\publish
