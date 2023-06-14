@@ -30,18 +30,18 @@ namespace Prostech.WMS.API.Controllers
                 DateTime utcTime = DateTime.UtcNow;
                 TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
                 DateTime cstTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, cstZone);
-                this.Logger.LogInformation("Receive AGV event successfully - " + cstTime.ToString("dd/MM/yyyy HH:MM:ss:FF"));
+                this.Logger.LogDebug("Receive AGV event successfully --- " + cstTime.ToString("dd/MM/yyyy HH:MM:ss:FF"));
                 return new JsonResult(
                         new
                         {
                             Id = 1,
-                            Message = "Receive AGV event successfully - " + cstTime.ToString("dd/MM/yyyy HH:MM:ss:FF"),
+                            Message = "Receive AGV event successfully --- " + cstTime.ToString("dd/MM/yyyy HH:MM:ss:FF"),
                         });
             }
             catch (Exception ex)
             {
                 ExceptionStatusCodeHelper.SetStatusCode(HttpContext, ex);
-                this.Logger.LogInformation(ex.Message);
+                this.Logger.LogDebug(ex.Message);
                 return new JsonResult(ex.Message);
             }
         }
