@@ -26,6 +26,18 @@ jobs:
       run: dotnet test "${{ env.WORKING_DIRECTORY }}" --no-build
     - name: Publish
       run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
+    - name: Set up env. for application
+      uses: microsoft/variable-substitution@v1
+      with:
+        files: './publish/**/appsettings.json'
+      env:
+        AppSettings.ASPNETCORE_ENVIRONMENT: "QC"
+    - name: Inject secrects of QC to application
+      uses: microsoft/variable-substitution@v1
+      with:
+        files: './publish/**/appsettings.QC.json'
+      env:
+        AppSettings.DatabaseConnection.WMS: ${{ secrets.QC_CONNECTIO_STRING }}
     - name: Publish Artifacts
       uses: actions/upload-artifact@v3
       with:
