@@ -29,7 +29,7 @@ namespace Prostech.WMS.DAL.DBContext
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql("User Id=admin;Password=Rozitek123@#;Host=localhost;Port=5432;Database=wms;");
+            optionsBuilder.UseNpgsql("");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
