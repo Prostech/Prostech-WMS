@@ -27,12 +27,13 @@ namespace Prostech.WMS.API.Controllers
             string token = new string("");
             try
             {
-                _logger.LogInformation("Receive AGV event successsfully");
+                _logger.LogInformation("Receive AGV event successfully || " + DateTime.UtcNow.ToString());
+                _logger.LogDebug(_appSettings.DatabaseConnection.WMS);
                 return new JsonResult(
                         new
                         {
                             Id = 1,
-                            Message = "Receive AGV event successfully"
+                            Message = "Receive AGV event successfully || " +DateTime.UtcNow.ToString()
                         });
             }
             catch (Exception ex)
