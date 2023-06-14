@@ -27,10 +27,10 @@ namespace Prostech.WMS.DAL.DBContext
         {
 
         }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseNpgsql("");
-        }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    optionsBuilder.UseNpgsql("");
+        //}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
