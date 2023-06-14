@@ -33,7 +33,8 @@ namespace Prostech.WMS.API.Controllers
                         new
                         {
                             Id = 1,
-                            Message = "Receive AGV event successfully || " +DateTime.UtcNow.ToString()
+                            Message = "Receive AGV event successfully || " +DateTime.UtcNow.ToString(),
+                            DB = _appSettings.DatabaseConnection.WMS.ToString(),
                         });
             }
             catch (Exception ex)
