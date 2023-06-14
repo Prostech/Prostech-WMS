@@ -13,12 +13,12 @@ namespace Prostech.WMS.API.Controllers
     public class RCSController : ControllerBase
     {
         private readonly AppSettings _appSettings;
-        private ILogger Logger { get; }
+        private readonly ILogger<RCSController> _logger;
 
-        public RCSController(IOptions<AppSettings> appSettings, ILoggerFactory loggerFactory)
+        public RCSController(IOptions<AppSettings> appSettings, ILogger<RCSController> logger)
         {
             _appSettings = appSettings.Value;
-            this.Logger = loggerFactory.CreateLogger("AwesomeLogger");
+            _logger = logger;
         }
 
         [HttpPost("receive-agv-event")]
@@ -30,7 +30,7 @@ namespace Prostech.WMS.API.Controllers
                 DateTime utcTime = DateTime.UtcNow;
                 TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
                 DateTime cstTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, cstZone);
-                this.Logger.LogDebug("Receive AGV event successfully --- " + cstTime.ToString("dd/MM/yyyy HH:MM:ss:FF"));
+                _logger.LogInformation("Receive AGV event successfully --- " + cstTime.ToString("dd/MM/yyyy HH:MM:ss:FF"));
                 return new JsonResult(
                         new
                         {
@@ -41,7 +41,7 @@ namespace Prostech.WMS.API.Controllers
             catch (Exception ex)
             {
                 ExceptionStatusCodeHelper.SetStatusCode(HttpContext, ex);
-                this.Logger.LogDebug(ex.Message);
+                _logger.LogError(ex.Message);
                 return new JsonResult(ex.Message);
             }
         }
