@@ -2,6 +2,7 @@ using LinqToDB.Common;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.AzureAppServices;
 using Microsoft.IdentityModel.Tokens;
 using Prostech.WMS.API.Controllers;
 using Prostech.WMS.API.Middleware;
@@ -30,6 +31,19 @@ try
     {
         Args = args,
         EnvironmentName = envInUsed
+    });
+
+    builder.Logging.ClearProviders();
+    builder.Logging.AddConsole();
+    builder.Logging.AddDebug();
+    builder.Logging.AddAzureWebAppDiagnostics();
+
+
+    builder.Services.Configure<AzureFileLoggerOptions>(options =>
+    {
+        options.FileName = "my-azure-diagnostics-";
+        options.FileSizeLimit = 10 * 1024;
+        options.RetainedFileCountLimit = 5;
     });
 
     //Config to use Appsetting objects in appsettings json
