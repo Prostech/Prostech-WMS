@@ -13,12 +13,12 @@ namespace Prostech.WMS.API.Controllers
     public class RCSController : ControllerBase
     {
         private readonly AppSettings _appSettings;
-        private readonly ILogger<RCSController> _logger;
+        private ILogger Logger { get; }
 
-        public RCSController(IOptions<AppSettings> appSettings, ILogger<RCSController> logger)
+        public RCSController(IOptions<AppSettings> appSettings, ILoggerFactory loggerFactory)
         {
             _appSettings = appSettings.Value;
-            _logger = logger;
+            this.Logger = loggerFactory.CreateLogger("AwesomeLogger");
         }
 
         [HttpPost("receive-agv-event")]
@@ -27,20 +27,21 @@ namespace Prostech.WMS.API.Controllers
             string token = new string("");
             try
             {
-                _logger.LogInformation("Receive AGV event successfully || " + DateTime.UtcNow.ToString());
-                _logger.LogDebug(_appSettings.DatabaseConnection.WMS);
+                DateTime utcTime = DateTime.UtcNow;
+                TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+                DateTime cstTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, cstZone);
+                this.Logger.LogInformation("Receive AGV event successfully - " + cstTime.ToString("dd/MM/yyyy HH:MM:ss:FF"));
                 return new JsonResult(
                         new
                         {
                             Id = 1,
-                            Message = "Receive AGV event successfully || " +DateTime.UtcNow.ToString(),
-                            DB = _appSettings.DatabaseConnection.WMS.ToString(),
+                            Message = "Receive AGV event successfully - " + cstTime.ToString("dd/MM/yyyy HH:MM:ss:FF"),
                         });
             }
             catch (Exception ex)
             {
                 ExceptionStatusCodeHelper.SetStatusCode(HttpContext, ex);
-                _logger.LogError(ex.Message);
+                this.Logger.LogInformation(ex.Message);
                 return new JsonResult(ex.Message);
             }
         }
