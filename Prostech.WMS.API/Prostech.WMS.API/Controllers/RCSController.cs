@@ -30,7 +30,7 @@ namespace Prostech.WMS.API.Controllers
                 DateTime utcTime = DateTime.UtcNow;
                 TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
                 DateTime cstTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, cstZone);
-                _logger.LogInformation("Receive AGV event successfully || " + cstTime.ToString());
+                _logger.LogDebug("Receive AGV event successfully || " + cstTime.ToString());
                 return new JsonResult(
                         new
                         {
