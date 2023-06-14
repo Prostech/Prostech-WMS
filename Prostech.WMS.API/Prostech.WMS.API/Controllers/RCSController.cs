@@ -31,13 +31,11 @@ namespace Prostech.WMS.API.Controllers
                 TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
                 DateTime cstTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, cstZone);
                 _logger.LogInformation("Receive AGV event successfully || " + cstTime.ToString());
-                _logger.LogDebug(_appSettings.DatabaseConnection.WMS);
                 return new JsonResult(
                         new
                         {
                             Id = 1,
-                            Message = "Receive AGV event successfully || " + cstTime.ToString(),
-                            DB = _appSettings.DatabaseConnection.WMS.ToString(),
+                            Message = "Receive AGV event successfully || " + cstTime.ToString("dddd/MMMM/yyyy F"),
                         });
             }
             catch (Exception ex)
