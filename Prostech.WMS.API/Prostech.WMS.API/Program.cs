@@ -36,11 +36,11 @@ try
     builder.Logging.ClearProviders();
     builder.Logging.AddConsole();
     builder.Logging.AddDebug();
-
+    builder.Logging.AddAzureWebAppDiagnostics();
 
     builder.Services.Configure<AzureFileLoggerOptions>(options =>
     {
-        options.FileName = "my-azure-diagnostics-";
+        options.FileName = "my-azure-diagnostics-"+ DateTime.Now;
         options.FileSizeLimit = 10 * 1024;
         options.RetainedFileCountLimit = 5;
     });

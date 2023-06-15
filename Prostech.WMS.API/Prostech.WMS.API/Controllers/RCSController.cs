@@ -35,7 +35,7 @@ namespace Prostech.WMS.API.Controllers
 
                 _logger.LogInformation(JsonConvert.SerializeObject(events));
                 _logger.LogInformation("Receive event successfully -- " + cstTime.ToString("dd/MM/yyyy HH:MM:ss:FF"));
-                _logger.LogError("error");
+                _logger.LogError("error haha");
 
                 return new JsonResult(new
                 {
