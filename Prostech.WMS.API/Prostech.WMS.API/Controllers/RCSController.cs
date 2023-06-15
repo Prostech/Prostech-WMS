@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Prostech.WMS.API.Models;
@@ -17,11 +19,13 @@ namespace Prostech.WMS.API.Controllers
     {
         private readonly AppSettings _appSettings;
         private readonly ILogger<RCSController> _logger;
+        private IMemoryCache _cache;
 
-        public RCSController(IOptions<AppSettings> appSettings, ILogger<RCSController> logger)
+        public RCSController(IOptions<AppSettings> appSettings, ILogger<RCSController> logger, IMemoryCache cache)
         {
             _appSettings = appSettings.Value;
             _logger = logger;
+            _cache = cache ?? throw new ArgumentNullException(nameof(cache));
         }
 
         [HttpPost("receive-event")]
@@ -32,6 +36,18 @@ namespace Prostech.WMS.API.Controllers
             {
                 _logger.LogInformation(JsonConvert.SerializeObject(events));
                 _logger.LogInformation("Receive event successfully -- " + TimeHelper.CurrentTime.ToString());
+
+
+                string cacheKey = "myKey";
+                string cacheValue = "Hello, world!";
+
+                string cachedData = _cache.Get(cacheKey) as string;
+
+
+                _cache.Set(cacheKey, cacheValue);
+
+                cachedData = _cache.Get(cacheKey) as string;
+
 
                 return new JsonResult(new
                 {
@@ -83,6 +99,7 @@ namespace Prostech.WMS.API.Controllers
 
                     var resultString = client.PostAsync(endpoint, payload).Result.Content.ReadAsStringAsync().Result; // Send POST request to API, read response content as string and store in 'result' variable
                     result = JsonConvert.DeserializeObject<AGVReturnMessage>(resultString);
+                    _logger.LogInformation(JsonConvert.SerializeObject(result));
                 }
 
                 return result;

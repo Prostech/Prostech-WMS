@@ -2,6 +2,7 @@ using LinqToDB.Common;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging.AzureAppServices;
 using Microsoft.IdentityModel.Tokens;
 using Prostech.WMS.API.Controllers;
@@ -9,6 +10,7 @@ using Prostech.WMS.API.Middleware;
 using Prostech.WMS.API.Models;
 using Prostech.WMS.BLL;
 using Prostech.WMS.BLL.AutoMapper;
+using Prostech.WMS.BLL.Helpers.ValueChecker;
 using Prostech.WMS.BLL.Interface;
 using Prostech.WMS.DAL.DBContext;
 using Prostech.WMS.DAL.DBContext.Interface;
@@ -34,10 +36,15 @@ try
     });
 
     //Application Insights Logging
-    builder.Logging.AddApplicationInsights(
-        configureTelemetryConfiguration: (config) => config.ConnectionString = builder.Configuration.GetSection("AzureLoggingConnectionString").Value,
-        configureApplicationInsightsLoggerOptions: (options) => { }
-    );
+    
+    string azureApplicationInsightsLogging = builder.Configuration.GetSection("AzureLoggingConnectionString").Value;
+    if (ValueCheckerHelper.IsNotNullOrEmpty(azureApplicationInsightsLogging))
+    {
+        builder.Logging.AddApplicationInsights(
+            configureTelemetryConfiguration: (config) => config.ConnectionString = builder.Configuration.GetSection("AzureLoggingConnectionString").Value,
+            configureApplicationInsightsLoggerOptions: (options) => { }
+        );
+    }
 
     //Config to use Appsetting objects in appsettings json
     var appConfigSection = builder.Configuration.GetSection("AppSettings");
@@ -83,10 +90,9 @@ try
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IUserAccountService, UserAccountService>();
     builder.Services.AddScoped<IActionHistoryService, ActionHistoryService>();
-
+    builder.Services.AddMemoryCache();
     //Repository
     builder.Services.AddScoped(typeof(IWMSGenericRepository<>), typeof(WMSGenericRepository<>));
-
     builder.Services.AddScoped<IProductItemRepository, ProductItemRepository>();
     builder.Services.AddScoped<IProductRepository, ProductRepository>();
     builder.Services.AddScoped<IActionHistoryRepository, ActionHistoryRepository>();
