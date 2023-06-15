@@ -2,8 +2,8 @@
 {
     public class ReceiveEvent
     {
-        public string Caller { get; set; } = String.Empty;
+        public string CallerType { get; set; } = String.Empty;
         public string EventType { get; set; } = String.Empty;
-        public string EventTime { get; set; } = String.Empty;
+        public string TaskType { get; set; } = String.Empty;
     }
 }

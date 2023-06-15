@@ -1,8 +1,8 @@
-name: 'Build & Deploy to Azure'
+name: "Build & Deploy to Azure"
 run-name: "#${{ github.run_number }} - ${{ github.ref_name }} - ${{ github.sha }}"
 on:
   workflow_dispatch:
-  
+
 env:
   AZURE_WEBAPP_NAME: ProstechWMSAPI20230614091453
   AZURE_WEBAPP_PACKAGE_PATH: .\publish
@@ -13,48 +13,54 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
-    - name: Restore
-      run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
-    - name: Build
-      run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
-    - name: Test
-      run: dotnet test "${{ env.WORKING_DIRECTORY }}" --no-build
-    - name: Publish
-      run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
-    - name: Set up env. for application
-      uses: microsoft/variable-substitution@v1
-      with:
-        files: './publish/**/appsettings.json'
-      env:
-        AppSettings.ASPNETCORE_ENVIRONMENT: "QC"
-    - name: Inject secrects of QC to application
-      uses: microsoft/variable-substitution@v1
-      with:
-        files: './publish/**/appsettings.QC.json'
-      env:
-        AppSettings.DatabaseConnection.WMS: ${{ secrets.QC_CONNECTIO_STRING }}
-    - name: Publish Artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: webapp
-        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+      - uses: actions/checkout@v3
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
+      - name: Restore
+        run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
+      - name: Build
+        run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
+      - name: Test
+        run: dotnet test "${{ env.WORKING_DIRECTORY }}" --no-build
+      - name: Publish
+        run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
+      - name: Set up env. for application
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: "./publish/**/appsettings.json"
+        env:
+          AppSettings.ASPNETCORE_ENVIRONMENT: "QC"
+      - name: Inject secrects of QC to application
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: "./publish/**/appsettings.QC.json"
+        env:
+          AppSettings.DatabaseConnection.WMS: ${{ secrets.QC_CONNECTIO_STRING }}
+      - name: Inject application insights secret of QC to application
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: "./publish/**/appsettings.QC.json"
+        env:
+          AzureLoggingConnectionString: ${{ secrets.AZURE_LOGGING }}
+      - name: Publish Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: webapp
+          path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
   deploy:
     runs-on: windows-latest
     needs: build
     steps:
-    - name: Download artifact from build job
-      uses: actions/download-artifact@v3
-      with:
-        name: webapp
-        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
-    - name: Deploy to Azure WebApp
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: ${{ env.AZURE_WEBAPP_NAME }}
-        publish-profile: ${{ secrets.ProstechWMSAPI20230614091453_2B74 }}
-        package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: webapp
+          path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+      - name: Deploy to Azure WebApp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.ProstechWMSAPI20230614091453_2B74 }}
+          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}

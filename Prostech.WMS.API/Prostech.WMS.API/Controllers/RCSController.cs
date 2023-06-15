@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Prostech.WMS.API.Models;
 using Prostech.WMS.BLL.Helpers.ExceptionStatusCode;
+using Prostech.WMS.BLL.Helpers.Time;
 using Prostech.WMS.BLL.Interface;
 using Prostech.WMS.DAL.DTOs.UserAccount;
 using System.ComponentModel.DataAnnotations;
@@ -29,18 +30,13 @@ namespace Prostech.WMS.API.Controllers
             string token = new string("");
             try
             {
-                DateTime utcTime = DateTime.UtcNow;
-                TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-                DateTime cstTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, cstZone);
-
                 _logger.LogInformation(JsonConvert.SerializeObject(events));
-                _logger.LogInformation("Receive event successfully -- " + cstTime.ToString("dd/MM/yyyy HH:MM:ss:FF"));
-                _logger.LogError("error haha");
+                _logger.LogInformation("Receive event successfully -- " + TimeHelper.CurrentTime.ToString());
 
                 return new JsonResult(new
                 {
                     Id = 1,
-                    Message = "Receive event successfully -- " + cstTime.ToString("dd/MM/yyyy HH:MM:ss:FF"),
+                    Message = "Receive event successfully -- " + TimeHelper.CurrentTime.ToString(),
                     Event = events,
                 });
             }

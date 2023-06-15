@@ -33,17 +33,11 @@ try
         EnvironmentName = envInUsed
     });
 
-    builder.Logging.ClearProviders();
-    builder.Logging.AddConsole();
-    builder.Logging.AddDebug();
-    builder.Logging.AddAzureWebAppDiagnostics();
-
-    builder.Services.Configure<AzureFileLoggerOptions>(options =>
-    {
-        options.FileName = "my-azure-diagnostics-"+ DateTime.Now;
-        options.FileSizeLimit = 10 * 1024;
-        options.RetainedFileCountLimit = 5;
-    });
+    //Application Insights Logging
+    builder.Logging.AddApplicationInsights(
+        configureTelemetryConfiguration: (config) => config.ConnectionString = builder.Configuration.GetSection("AzureLoggingConnectionString").Value,
+        configureApplicationInsightsLoggerOptions: (options) => { }
+    );
 
     //Config to use Appsetting objects in appsettings json
     var appConfigSection = builder.Configuration.GetSection("AppSettings");
