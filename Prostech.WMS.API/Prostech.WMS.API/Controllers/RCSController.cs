@@ -9,6 +9,7 @@ using Prostech.WMS.BLL.Helpers.Time;
 using Prostech.WMS.BLL.Interface;
 using Prostech.WMS.DAL.DTOs.UserAccount;
 using System.ComponentModel.DataAnnotations;
+using System.Net.Sockets;
 using System.Text;
 
 namespace Prostech.WMS.API.Controllers
@@ -20,6 +21,8 @@ namespace Prostech.WMS.API.Controllers
         private readonly AppSettings _appSettings;
         private readonly ILogger<RCSController> _logger;
         private IMemoryCache _cache;
+        private const string ServerAddress = "192.168.100.25"; // Replace with your server IP address
+        private const int ServerPort = 30001;
 
         public RCSController(IOptions<AppSettings> appSettings, ILogger<RCSController> logger, IMemoryCache cache)
         {
@@ -119,6 +122,38 @@ namespace Prostech.WMS.API.Controllers
                 .Select(s => s[random.Next(s.Length)])
                 .ToArray());
             return randomString;
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<string>> SendMessageToServer([FromBody] string message)
+        {
+            try
+            {
+                // Create a TCP/IP socket
+                using (var clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
+                {
+                    // Connect to the server
+                    clientSocket.Connect(ServerAddress, ServerPort);
+
+                    // Convert the message to bytes
+                    var messageBytes = Encoding.ASCII.GetBytes(message);
+
+                    // Send the message to the server
+                    clientSocket.Send(messageBytes);
+
+                    // Receive the response from the server
+                    var responseBytes = new byte[1024];
+                    var bytesRead = clientSocket.Receive(responseBytes);
+                    var responseMessage = Encoding.ASCII.GetString(responseBytes, 0, bytesRead);
+
+                    return Ok(responseMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw new Exception(ex.Message);
+            }
         }
     }
 }
