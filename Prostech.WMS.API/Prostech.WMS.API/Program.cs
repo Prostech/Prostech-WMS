@@ -36,7 +36,6 @@ try
     builder.Logging.ClearProviders();
     builder.Logging.AddConsole();
     builder.Logging.AddDebug();
-    builder.Logging.AddAzureWebAppDiagnostics();
 
 
     builder.Services.Configure<AzureFileLoggerOptions>(options =>
