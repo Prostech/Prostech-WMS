@@ -18,6 +18,8 @@ using Prostech.WMS.DAL.Models;
 using Prostech.WMS.DAL.Repositories.WMS;
 using Prostech.WMS.DAL.Repositories.WMS.Base;
 using Prostech.WMS.DAL.Repositories.WMS.Interface;
+using System.Net.Sockets;
+using System.Net;
 using System.Text;
 
 try
@@ -151,10 +153,67 @@ try
 
     app.MapControllers();
 
+    await OpenSocketAsync();
+
     app.Run();
 
 }
 catch
 {
     throw;
+}
+
+static async Task OpenSocketAsync()
+{
+    // Set the IP address and port number to listen on
+    IPAddress ipAddress = IPAddress.Parse("127.0.0.1");
+    int port = 4341;
+
+    // Create a TCP/IP socket
+    Socket listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+
+    try
+    {
+        // Bind the socket to the IP address and port
+        listener.Bind(new IPEndPoint(ipAddress, port));
+
+        // Start listening for incoming connections
+        listener.Listen(10);
+
+        // Accept incoming connections in a loop
+        while (true)
+        {
+            // Accept the connection and create a new socket for communication
+            Socket handler = await listener.AcceptAsync();
+
+            // Handle the connection in a separate thread
+            ThreadPool.QueueUserWorkItem(HandleClient, handler);
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("Error: {0}", ex.Message);
+        throw new Exception(ex.ToString());
+    }
+}
+
+static void HandleClient(object state)
+{
+    Socket handler = (Socket)state;
+
+    try
+    {
+        // Handle the communication with the client socket here
+        // For example, you can read/write data using the handler socket
+        // Remember to close the socket when done
+
+        // Close the client socket
+        handler.Shutdown(SocketShutdown.Both);
+        handler.Close();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("Error: {0}", ex.Message);
+        throw new Exception(ex.ToString());
+    }
 }
