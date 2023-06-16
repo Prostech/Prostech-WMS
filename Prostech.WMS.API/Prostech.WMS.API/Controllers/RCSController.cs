@@ -21,9 +21,6 @@ namespace Prostech.WMS.API.Controllers
         private readonly AppSettings _appSettings;
         private readonly ILogger<RCSController> _logger;
         private IMemoryCache _cache;
-        private const string ServerAddress = "192.168.100.25"; // Replace with your server IP address
-        private const int ServerPort = 30001;
-
         public RCSController(IOptions<AppSettings> appSettings, ILogger<RCSController> logger, IMemoryCache cache)
         {
             _appSettings = appSettings.Value;
@@ -110,6 +107,7 @@ namespace Prostech.WMS.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+                ExceptionStatusCodeHelper.SetStatusCode(HttpContext, ex);
                 throw new Exception(ex.Message);
             }
         }
@@ -124,8 +122,8 @@ namespace Prostech.WMS.API.Controllers
             return randomString;
         }
 
-        [HttpPost]
-        public async Task<ActionResult<string>> SendMessageToServer([FromBody] string message)
+        [HttpPost("send-cobot-elite-task")]
+        public async Task<ActionResult> SendMessageToServer([FromBody] string message)
         {
             try
             {
@@ -133,7 +131,7 @@ namespace Prostech.WMS.API.Controllers
                 using (var clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
                 {
                     // Connect to the server
-                    clientSocket.Connect(ServerAddress, ServerPort);
+                    clientSocket.Connect(_appSettings.CobotElite.ServerAddress, _appSettings.CobotElite.ServerPort);
 
                     // Convert the message to bytes
                     var messageBytes = Encoding.ASCII.GetBytes(message);
@@ -146,11 +144,12 @@ namespace Prostech.WMS.API.Controllers
                     var bytesRead = clientSocket.Receive(responseBytes);
                     var responseMessage = Encoding.ASCII.GetString(responseBytes, 0, bytesRead);
 
-                    return Ok(responseMessage);
+                    return new JsonResult (responseMessage);
                 }
             }
             catch (Exception ex)
             {
+                ExceptionStatusCodeHelper.SetStatusCode(HttpContext, ex);
                 _logger.LogError(ex.Message);
                 throw new Exception(ex.Message);
             }

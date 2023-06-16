@@ -6,5 +6,6 @@
         public DatabaseConnection DatabaseConnection { get; set; }
         public JwtSettings JwtSettings { get; set; }
         public string RCSUrl { get; set; }
+        public CobotElite CobotElite { get; set; }
     }
 }
