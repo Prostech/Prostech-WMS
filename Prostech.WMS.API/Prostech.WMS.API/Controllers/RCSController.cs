@@ -9,6 +9,7 @@ using Prostech.WMS.BLL.Helpers.Time;
 using Prostech.WMS.BLL.Interface;
 using Prostech.WMS.DAL.DTOs.UserAccount;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
@@ -125,13 +126,20 @@ namespace Prostech.WMS.API.Controllers
         [HttpPost("send-cobot-elite-task")]
         public async Task<ActionResult> SendMessageToServer([FromBody] string message)
         {
-            _logger.LogInformation("Server address: "+_appSettings.CobotElite.ServerAddress);
+            _logger.LogInformation("Server address: " + _appSettings.CobotElite.ServerAddress);
             _logger.LogInformation("Server port: " + _appSettings.CobotElite.ServerPort);
+
+
+            //IPEndPoint ipEndpoint = new IPEndPoint(192.1, 800);
             try
             {
+
                 // Create a TCP/IP socket
                 using (var clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
                 {
+                    //clientSocket.Bind(ipEndpoint);
+                    //clientSocket.Listen(10);
+
                     // Connect to the server
                     clientSocket.Connect(_appSettings.CobotElite.ServerAddress, _appSettings.CobotElite.ServerPort);
 
@@ -146,7 +154,7 @@ namespace Prostech.WMS.API.Controllers
                     var bytesRead = clientSocket.Receive(responseBytes);
                     var responseMessage = Encoding.ASCII.GetString(responseBytes, 0, bytesRead);
 
-                    return new JsonResult (responseMessage);
+                    return new JsonResult(responseMessage);
                 }
             }
             catch (Exception ex)
