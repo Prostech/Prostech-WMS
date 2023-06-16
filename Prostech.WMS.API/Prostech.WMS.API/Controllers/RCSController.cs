@@ -126,41 +126,24 @@ namespace Prostech.WMS.API.Controllers
         [HttpPost("send-cobot-elite-task")]
         public async Task<ActionResult> SendMessageToServer([FromBody] string message)
         {
-            _logger.LogInformation("Server address: " + _appSettings.CobotElite.ServerAddress);
-            _logger.LogInformation("Server port: " + _appSettings.CobotElite.ServerPort);
+            byte[] data = Encoding.UTF8.GetBytes(message);
 
+            string result = await SocketHelper.SendAsync(data, 1024, _logger);
+            return new JsonResult(result);
+        }
 
-            //IPEndPoint ipEndpoint = new IPEndPoint(192.1, 800);
+        [HttpPost("client-to-connect")]
+        public async Task<ActionResult> WaitingCLientToConnect([FromBody] string message = "")
+        {
             try
             {
-
-                // Create a TCP/IP socket
-                using (var clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
-                {
-                    //clientSocket.Bind(ipEndpoint);
-                    //clientSocket.Listen(10);
-
-                    // Connect to the server
-                    clientSocket.Connect(_appSettings.CobotElite.ServerAddress, _appSettings.CobotElite.ServerPort);
-
-                    // Convert the message to bytes
-                    var messageBytes = Encoding.ASCII.GetBytes(message);
-
-                    // Send the message to the server
-                    clientSocket.Send(messageBytes);
-
-                    // Receive the response from the server
-                    var responseBytes = new byte[1024];
-                    var bytesRead = clientSocket.Receive(responseBytes);
-                    var responseMessage = Encoding.ASCII.GetString(responseBytes, 0, bytesRead);
-
-                    return new JsonResult(responseMessage);
-                }
+                await SocketHelper.WaitForClientConnectionAsync("192.168.100.36", 4341);
+                return new JsonResult("Connect successfully");
             }
             catch (Exception ex)
             {
-                ExceptionStatusCodeHelper.SetStatusCode(HttpContext, ex);
                 _logger.LogError(ex.Message);
+                ExceptionStatusCodeHelper.SetStatusCode(HttpContext, ex);
                 throw new Exception(ex.Message);
             }
         }
