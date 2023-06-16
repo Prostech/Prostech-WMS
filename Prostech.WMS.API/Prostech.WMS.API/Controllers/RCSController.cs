@@ -35,7 +35,7 @@ namespace Prostech.WMS.API.Controllers
             try
             {
                 _logger.LogInformation(JsonConvert.SerializeObject(events));
-                _logger.LogInformation("Receive event successfully -- " + TimeHelper.CurrentTime.ToString());
+                _logger.LogInformation("Receive event successfully || " + TimeHelper.CurrentTime.ToString());
 
 
                 string cacheKey = "myKey";
@@ -52,7 +52,7 @@ namespace Prostech.WMS.API.Controllers
                 return new JsonResult(new
                 {
                     Id = 1,
-                    Message = "Receive event successfully -- " + TimeHelper.CurrentTime.ToString(),
+                    Message = "Receive event successfully || " + TimeHelper.CurrentTime.ToString(),
                     Event = events,
                 });
             }
