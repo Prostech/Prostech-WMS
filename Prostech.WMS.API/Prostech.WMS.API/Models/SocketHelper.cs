@@ -55,12 +55,17 @@ namespace Prostech.WMS.API.Models
                 logger.LogInformation("Sending data...");
                 await _handler.SendAsync(data, SocketFlags.None);
                 logger.LogInformation("Data sent successfully.");
+                string receivedMessage = "";
+                while (true)
+                {
+                    byte[] buffer = new byte[bufferSize];
+                    int bytesRead = await _handler.ReceiveAsync(buffer, SocketFlags.None);
+                    receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                    logger.LogInformation("Received message " + receivedMessage);
+                    if (receivedMessage == "bye")
+                        break;
+                }
 
-                byte[] buffer = new byte[bufferSize];
-                int bytesRead = await _handler.ReceiveAsync(buffer, SocketFlags.None);
-                string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-
-                logger.LogInformation("Received message from client: " + receivedMessage);
 
                 return receivedMessage;
             }
