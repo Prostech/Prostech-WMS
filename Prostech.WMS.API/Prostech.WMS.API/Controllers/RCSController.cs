@@ -125,6 +125,8 @@ namespace Prostech.WMS.API.Controllers
         [HttpPost("send-cobot-elite-task")]
         public async Task<ActionResult> SendMessageToServer([FromBody] string message)
         {
+            _logger.LogInformation("Server address: "+_appSettings.CobotElite.ServerAddress);
+            _logger.LogInformation("Server port: " + _appSettings.CobotElite.ServerPort);
             try
             {
                 // Create a TCP/IP socket
