@@ -22,7 +22,7 @@ namespace Prostech.WMS.API.Models
             _handler = socket;
         }
 
-        public static async Task<Socket> WaitForClientConnectionAsync(string ipAddress, int port)
+        public static async Task<Socket> OpenSocket(string ipAddress, int port)
         {
             try
             {
@@ -72,6 +72,22 @@ namespace Prostech.WMS.API.Models
             catch (Exception ex)
             {
                 logger.LogError(ex.Message);
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public static void CloseSocket()
+        {
+            try
+            {
+                if (_handler != null && _handler.Connected)
+                {
+                    _handler.Shutdown(SocketShutdown.Both);
+                    _handler.Close();
+                }
+            }
+            catch (Exception ex)
+            {
                 throw new Exception(ex.Message);
             }
         }

@@ -7,5 +7,6 @@
         public JwtSettings JwtSettings { get; set; }
         public string RCSUrl { get; set; }
         public CobotElite CobotElite { get; set; }
+        public string DbConnection { get; set; }
     }
 }
