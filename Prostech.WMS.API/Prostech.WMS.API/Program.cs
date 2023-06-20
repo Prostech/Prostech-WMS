@@ -132,24 +132,24 @@ try
         };
     });
 
-    builder.Services.AddQuartz(q =>
-    {
-        q.UseMicrosoftDependencyInjectionScopedJobFactory();
+    //builder.Services.AddQuartz(q =>
+    //{
+    //    q.UseMicrosoftDependencyInjectionScopedJobFactory();
 
-        // Create a "key" for the job
-        var jobKey = new JobKey("DemoJob");
+    //    // Create a "key" for the job
+    //    var jobKey = new JobKey("DemoJob");
 
-        // Register the job with the DI container
-        q.AddJob<DemoJob>(opts => opts.WithIdentity(jobKey));
+    //    // Register the job with the DI container
+    //    q.AddJob<DemoJob>(opts => opts.WithIdentity(jobKey));
 
-        // Create a trigger for the job
-        q.AddTrigger(opts => opts
-            .ForJob(jobKey) // link to the HelloWorldJob
-            .WithIdentity("DemoJob-trigger") // give the trigger a unique name
-            .WithCronSchedule("0/10 * * * * ?")); // run every 5 seconds
+    //    // Create a trigger for the job
+    //    q.AddTrigger(opts => opts
+    //        .ForJob(jobKey) // link to the HelloWorldJob
+    //        .WithIdentity("DemoJob-trigger") // give the trigger a unique name
+    //        .WithCronSchedule("0/10 * * * * ?")); // run every 5 seconds
 
-    });
-    builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+    //});
+    //builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
     var app = builder.Build();
 

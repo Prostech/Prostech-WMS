@@ -102,20 +102,16 @@ namespace Prostech.WMS.API.Controllers
             string token = new string("");
             try
             {
-                _logger.LogInformation("Receive event successfully || " + TimeHelper.CurrentTime.ToString());
-                if (events.CallerName == "Cobot3")
+                if(events.TaskType != "2")
                 {
-                    if (events.TaskType == "1")
-                    {
-                        _logger.LogInformation("Cobot 3 ||" + TimeHelper.CurrentTime.ToString());
-                        await genAgvSchedulingTask(null, "A", "B ", null);
-                    }
+                    _logger.LogInformation("Receive event successfully || Cobot 3 || " + TimeHelper.CurrentTime.ToString());
+                    await genAgvSchedulingTask(null, "A", "B ", null);
                 }
 
                 return new JsonResult(new
                 {
                     Id = 1,
-                    Message = "Receive event successfully || " + TimeHelper.CurrentTime.ToString(),
+                    Message = "Cobot 3 execute event successfully || " + TimeHelper.CurrentTime.ToString(),
                     Event = events,
                 });
             }
@@ -194,7 +190,7 @@ namespace Prostech.WMS.API.Controllers
                 _logger.LogInformation("Receive call back");
                 if (req.method == "end")
                 {
-                    res = await SendMessageToClient(req.method);
+                    res = await SendMessageToClient("hello");
                 }
 
                 if(res)
@@ -232,7 +228,14 @@ namespace Prostech.WMS.API.Controllers
                 byte[] data = Encoding.UTF8.GetBytes(message);
 
                 string result = await SocketHelper.SendAsync(data, 1024, _logger);
-                return true;
+                if (result == "bye")
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             catch(Exception ex)
             {
@@ -247,7 +250,7 @@ namespace Prostech.WMS.API.Controllers
         {
             try
             {
-                await SocketHelper.OpenSocket("10.61.3.66", 4341);
+                await SocketHelper.OpenSocket("10.61.3.105", 4341);
                 return new JsonResult("Open socket successfully");
             }
             catch (Exception ex)
@@ -376,6 +379,11 @@ namespace Prostech.WMS.API.Controllers
             {
                 throw;
             }
+        }
+
+        [HttpGet]public async Task<IActionResult> TestDeploy ()
+        {
+            return new JsonResult("Deploy success v2.0.3");
         }
     }
 }
