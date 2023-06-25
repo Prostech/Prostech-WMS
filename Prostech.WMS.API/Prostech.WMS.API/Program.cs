@@ -149,7 +149,7 @@ try
 
     app.UseMiddleware<ResponseWrappingMiddleware>();
 
-    //app.UseMiddleware<SecurityMiddleware>();
+    app.UseMiddleware<SecurityMiddleware>();
 
     app.MapControllers();
 
